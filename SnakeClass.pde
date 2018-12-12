@@ -1,7 +1,7 @@
 // Total grid is 500 x 500
 // Grid is 25 x 25 with boxes of size 20 (not including padding)
 // Unfortunately must hardcode dimensions since size(x,y) cannot take variables
-final int PADDING = 1;
+final int PADDING = 2;
 final int BOX_SIZE = 20-(2*PADDING);
 final int SIZE = 25;
 
