@@ -4,7 +4,8 @@ import java.util.*;
 // Grid is 25 x 25 with boxes of size 20
 // Defined more in SnakeClass
 
-Snake snake;
+Snake snake = new Snake ();;
+Boolean good = true;
 
 void setup () {
   size(500, 500);
@@ -13,21 +14,21 @@ void setup () {
   fill(255);
   rectMode(CORNER);
   frameRate(60);
-  
-  snake = new Snake ();
 }
 
 void draw () {
-  background(100);
-  
-  for (SnakePoint p : snake.getBody()) {
-    rect(p.getXCoord(), p.getYCoord(), BOX_SIZE, BOX_SIZE);
-  }
-  
-  // Only move at certain intervals, but keep framerate high
-  // to lessen input latency
-  if (frameCount % 5 == 1) {
-    snake.moveAuto();
+  if (good) {
+    background(100);
+    
+    for (SnakePoint p : snake.getBody()) {
+      rect(p.getXCoord(), p.getYCoord(), BOX_SIZE, BOX_SIZE);
+    }
+    
+    // Only move at certain intervals, but keep framerate high
+    // to lessen input latency
+    if (frameCount % 5 == 1) {
+      good = snake.moveAuto();
+    }
   }
 }
 
@@ -48,8 +49,5 @@ void keyPressed () {
     case RIGHT:
       snake.setDirection('R');
       break;
-      
-    default:
-      println("What?");
   }
 }

@@ -3,6 +3,7 @@
 // Unfortunately must hardcode dimensions since size(x,y) cannot take variables
 final int PADDING = 1;
 final int BOX_SIZE = 20-(2*PADDING);
+final int SIZE = 25;
 
 final int START_LENGTH = 5;
 
@@ -43,10 +44,11 @@ class Snake {
   
   List<SnakePoint> getBody () { return body; }
   
-  void moveAuto () { move(direction); }
+  Boolean moveAuto () { return move(direction); }
   void setDirection (char d) { direction = d; }
   
-  void move(char mode) {    
+  // Return true or false based on if move is okay
+  Boolean move(char mode) {    
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
@@ -69,14 +71,20 @@ class Snake {
         println("Oopsy whoopsy");
     }
     
-    body.set(0, s);
-    
-    // Move remaining items to follow front
-    moveNext(1, lastX, lastY);
+    if (hitWall(s.getX(), s.getY())) {
+      return false;
+    } else {
+      body.set(0, s);
+      
+      // Move remaining items to follow front
+      return moveNext(1, lastX, lastY);
+    }
   }
   
-  private void moveNext (int i, int x, int y) {
-    if (i < body.size()) {
+  private Boolean moveNext (int i, int x, int y) {
+    if (hitFront(x, y)) {
+      return false;
+    } else if (i < body.size()) {
       SnakePoint s = body.get(i);
       int lastX = s.getX();
       int lastY = s.getY();
@@ -85,7 +93,17 @@ class Snake {
       s.setY(y);
       
       body.set(i, s);
-      moveNext(i+1, lastX, lastY);
+      return moveNext(i+1, lastX, lastY);
+    } else {
+      return true;
     }
+  }
+  
+  private Boolean hitWall (int x, int y) {
+    return x < 0 || x > (SIZE-1) || y < 0 || y > (SIZE-1);
+  }
+  
+  private Boolean hitFront (int x, int y) {
+    return x == body.get(0).getX() && y == body.get(0).getY();
   }
 }
