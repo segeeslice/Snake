@@ -10,13 +10,24 @@ final int START_LENGTH = 5;
 // Simply store coordinates of one segment of snake
 // Based on 0-indexed 25x25 grid
 class SnakePoint {
-  int x;
-  int y;
+  private int x;
+  private int y;
+  private color c;
   
   SnakePoint (int x_in, int y_in) {
     x = x_in;
     y = y_in;
+    c = color(255);
   }
+  
+  SnakePoint (int x_in, int y_in, color c_in) {
+    x = x_in;
+    y = y_in;
+    c = c_in;
+  }
+  
+  color getColor () { return c; }
+  void setColor (color c_in) { c = c_in; }
   
   int getX () { return x; }
   int getY () { return y; }
@@ -33,18 +44,21 @@ class Snake {
   private Vector<SnakePoint> body;
   private char direction;
   private char directionLast;
+  private color c;
   
   Snake () {
     body = new Vector<SnakePoint> ();
     direction = 'R';
     directionLast = 'R';
+    c = color(255);
     
     for (int i = START_LENGTH; i >= 0; i--) {
-      body.add(new SnakePoint(i, 0));
+      body.add(new SnakePoint(i, 0, c));
     }
   }
   
   List<SnakePoint> getBody () { return body; }
+  color getColor () { return c; }
   
   // Only set direction if it is not a direct conflict with the current direction
   void setDirection (char d) { direction = d; }
