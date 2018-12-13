@@ -32,10 +32,12 @@ class SnakePoint {
 class Snake {
   private Vector<SnakePoint> body;
   private char direction;
+  private char directionLast;
   
   Snake () {
     body = new Vector<SnakePoint> ();
     direction = 'R';
+    directionLast = 'R';
     
     for (int i = START_LENGTH; i >= 0; i--) {
       body.add(new SnakePoint(i, 0));
@@ -45,24 +47,31 @@ class Snake {
   List<SnakePoint> getBody () { return body; }
   
   // Only set direction if it is not a direct conflict with the current direction
-  void setDirection (char d) {
-    if (!opposite(d)) { direction = d; }
+  void setDirection (char d) { direction = d; }
+  
+  private Boolean opposite (char x, char y) {
+    return (x == 'U' && y == 'D') ||
+           (x == 'D' && y == 'U') ||
+           (x == 'R' && y == 'L') ||
+           (x == 'L' && y == 'R');
   }
   
-  private Boolean opposite (char d) {
-    return (d == 'U' && direction == 'D') ||
-           (d == 'D' && direction == 'U') ||
-           (d == 'R' && direction == 'L') ||
-           (d == 'L' && direction == 'R');
+  // Only move in direction if it is not a direct conflict with the past direction
+  Boolean moveAuto () {
+    if (!opposite(direction, directionLast)) {
+      return move(direction);
+    } else {
+      return move(directionLast);
+    }
   }
-  
-  Boolean moveAuto () { return move(direction); }
   
   // Return true or false based on if move is okay
   Boolean move(char mode) {    
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
+    
+    directionLast = mode;
     
     // Move front item
     switch (mode) {
