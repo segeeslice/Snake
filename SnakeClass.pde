@@ -58,7 +58,13 @@ class Snake {
   }
   
   List<SnakePoint> getBody () { return body; }
+  SnakePoint getHead () { return body.get(0); }
   color getColor () { return c; }
+  
+  void addPoint() {
+    // Coordinate is arbitrary since next move allows it to be drawn anyway
+    body.add(new SnakePoint(-1, -1, c)); 
+  }
   
   // Only set direction if it is not a direct conflict with the current direction
   void setDirection (char d) { direction = d; }

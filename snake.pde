@@ -46,6 +46,11 @@ void draw () {
     // to lessen input latency
     if (frameCount % 5 == 1) {
       playing = snake.moveAuto();
+      
+      if (snakeEat()) {
+        food = randomFood();
+        snake.addPoint();
+      }
     }
   } else { // Display play button    
     stroke(50);
@@ -84,8 +89,10 @@ void keyPressed () {
 }
 
 void mousePressed () {
+  // If play button is pressed
   if (mouseOverPlay()) {
     snake = new Snake();
+    food = randomFood ();
     playing = true;
   }
 }
@@ -105,10 +112,12 @@ Boolean mouseOverPlay () {
 SnakePoint randomFood () {
   int x = 0;
   int y = 0;
+  
   do {
-    int x = int(random(26));
-    int y = int(random(26));
+    x = int(random(25));
+    y = int(random(25));
   } while (snakeInterfere(x, y));
+  
   return new SnakePoint(x, y, FOOD_COLOR);
 }
 
@@ -118,4 +127,9 @@ Boolean snakeInterfere (int x, int y) {
   }
   
   return false;
+}
+
+Boolean snakeEat () {
+  SnakePoint head = snake.getHead();
+  return head.getX() == food.getX() && head.getY() == food.getY();
 }
