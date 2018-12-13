@@ -1,8 +1,16 @@
-# Snake v0.2.0
+# Snake v0.3.0
 
-A simple snake project I'm making for fun to learn the [Processing framework](https://processing.org/). Currently just a proof of concept more or less. Next step is to get it working as a functional game. May also delve into AI learning later through this project.
+A simple snake project I'm making for fun to learn the [Processing framework](https://processing.org/). Works as a functional replica of the classic snake arcade game (minus the scores...)
 
 Introduced to Processing through and strongly inspired by the videos from [Code Bullet](https://www.youtube.com/channel/UC0e3QhIYukixgh5VVpKHH9Q/).
+
+#### Definite features to come for v1.0.0
+- Score monitoring
+- Variable difficulties (movement speeds)
+
+#### Possible features to come eventually
+- Better play button style
+- AI learning mode (?)
 
 ____
 ### Made by Dustin Seger
