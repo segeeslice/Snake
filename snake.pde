@@ -1,16 +1,5 @@
 import java.util.*;
 
-// Total grid is 500 x 500
-// Grid is 25 x 25 with boxes of size 20
-// Defined more in SnakeClass
-
-Snake snake = new Snake ();
-SnakePoint food = randomFood();
-Boolean playing = false;
-
-final int BUTTON_DIAM = 100;
-final color FOOD_COLOR = color(250, 50, 50);
-
 void setup () {
   // Prelim
   size(500, 500);
@@ -35,20 +24,20 @@ void draw () {
     // Draw snake
     fill(snake.getColor());
     for (SnakePoint p : snake.getBody()) {
-      rect(p.getXCoord(), p.getYCoord(), BOX_SIZE, BOX_SIZE);
+      rect(p.getXCoord(), p.getYCoord(), SEG_SIZE, SEG_SIZE);
     }
     
     // Draw food
     fill(food.getColor());
-    rect(food.getXCoord(), food.getYCoord(), BOX_SIZE, BOX_SIZE);
+    rect(food.getXCoord(), food.getYCoord(), SEG_SIZE, SEG_SIZE);
     
     // Only move at certain intervals, but keep framerate high
     // to lessen input latency
     if (frameCount % 5 == 1) {
       playing = snake.moveAuto();
       
-      if (snakeEat()) {
-        food = randomFood();
+      if (snake.eating(food)) {
+        newFood();
         snake.addPoints(3);
       }
     }
@@ -59,7 +48,7 @@ void draw () {
     } else {
       fill (255);
     }
-    ellipse(250, 250, BUTTON_DIAM, BUTTON_DIAM);
+    ellipse(250, 250, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
     
     fill(0);
     text("Play", 249, 245);
@@ -92,7 +81,7 @@ void mousePressed () {
   // If play button is pressed
   if (mouseOverPlay()) {
     snake = new Snake();
-    food = randomFood ();
+    newFood();
     playing = true;
   }
 }
@@ -102,34 +91,9 @@ void mousePressed () {
 Boolean mouseOverPlay () {
   float disX = 250 - mouseX;
   float disY = 250 - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < BUTTON_DIAM/2 ) {
+  if (sqrt(sq(disX) + sq(disY)) < PLAY_BUTTON_DIAM/2 ) {
     return true;
   } else {
     return false;
   }
-}
-
-SnakePoint randomFood () {
-  int x = 0;
-  int y = 0;
-  
-  do {
-    x = int(random(25));
-    y = int(random(25));
-  } while (snakeInterfere(x, y));
-  
-  return new SnakePoint(x, y, FOOD_COLOR);
-}
-
-Boolean snakeInterfere (int x, int y) {
-  for (SnakePoint p : snake.getBody()) {
-    if (p.getX() == x && p.getY() == y) { return true; }
-  }
-  
-  return false;
-}
-
-Boolean snakeEat () {
-  SnakePoint head = snake.getHead();
-  return head.getX() == food.getX() && head.getY() == food.getY();
 }

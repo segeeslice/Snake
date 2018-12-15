@@ -1,12 +1,3 @@
-// Total grid is 500 x 500
-// Grid is 25 x 25 with boxes of size 20 (not including padding)
-// Unfortunately must hardcode dimensions since size(x,y) cannot take variables
-final int PADDING = 2;
-final int BOX_SIZE = 20-(2*PADDING);
-final int SIZE = 25;
-
-final int START_LENGTH = 5;
-
 // Simply store coordinates of one segment of snake
 // Based on 0-indexed 25x25 grid
 class SnakePoint {
@@ -143,10 +134,23 @@ class Snake {
   }
   
   private Boolean hitWall (int x, int y) {
-    return x < 0 || x > (SIZE-1) || y < 0 || y > (SIZE-1);
+    return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
   }
   
   private Boolean hitFront (int x, int y) {
     return x == body.get(0).getX() && y == body.get(0).getY();
+  }
+  
+  public Boolean bodyInterfere (int x, int y) {
+    for (SnakePoint p : body) {
+      if (p.getX() == x && p.getY() == y) { return true; }
+    }
+    
+    return false;
+  }
+  
+  public Boolean eating (SnakePoint food) {
+    SnakePoint head = getHead();
+    return head.getX() == food.getX() && head.getY() == food.getY();
   }
 }
