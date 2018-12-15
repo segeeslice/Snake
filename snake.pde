@@ -49,7 +49,7 @@ void draw () {
       
       if (snakeEat()) {
         food = randomFood();
-        snake.addPoint();
+        snake.addPoints(3);
       }
     }
   } else { // Display play button    
