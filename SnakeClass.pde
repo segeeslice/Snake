@@ -28,7 +28,7 @@ class SnakePoint {
   // Return the coordinates to be displayed
   // Sends top left coordinate, assuming mode CORNER
   int getXCoord () { return x*20 + PADDING; }
-  int getYCoord () { return y*20 + PADDING; }
+  int getYCoord () { return y*20 + PADDING + SCORE_HEIGHT; }
 }
 
 class Snake {

@@ -18,11 +18,13 @@ final int SEG_SIZE = 20-(2*PADDING);
 // Beginning length of the snake
 final int START_LENGTH = 5;
 
+final int SCORE_HEIGHT = 50;
 
-// --- VARAIBLES ---
+// --- VARIABLES ---
 Snake snake = new Snake ();
 SnakePoint food = randomFood();
 Boolean playing = false;
+Integer score = 0;
 
 
 // --- UTIL FUNCTIONS ---
