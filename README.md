@@ -4,6 +4,18 @@ A simple snake project I'm making for fun to learn the [Processing framework](ht
 
 Introduced to Processing through and strongly inspired by the videos from [Code Bullet](https://www.youtube.com/channel/UC0e3QhIYukixgh5VVpKHH9Q/).
 
+#### How to use (general)
+- Download repo and locate the application.* folders in the base directory
+- Run the executable for your given OS
+
+#### How to use (dev)
+- Download the repo
+- [Download the Processing program](https://processing.org/download/)
+- Add the repo to your Processing sketchbook and open
+- Run via the play button
+
+___
+
 #### Definite features to come for v1.0.0
 - Score monitoring
 - Variable difficulties (movement speeds)
