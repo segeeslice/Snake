@@ -80,7 +80,7 @@ class Snake {
   }
   
   // Return true or false based on if move is okay
-  Boolean move(char mode) {    
+  Boolean move (char mode) {    
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
