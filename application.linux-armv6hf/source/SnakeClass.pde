@@ -1,12 +1,3 @@
-// Total grid is 500 x 500
-// Grid is 25 x 25 with boxes of size 20 (not including padding)
-// Unfortunately must hardcode dimensions since size(x,y) cannot take variables
-final int PADDING = 2;
-final int BOX_SIZE = 20-(2*PADDING);
-final int SIZE = 25;
-
-final int START_LENGTH = 5;
-
 // Simply store coordinates of one segment of snake
 // Based on 0-indexed 25x25 grid
 class SnakePoint {
@@ -37,7 +28,7 @@ class SnakePoint {
   // Return the coordinates to be displayed
   // Sends top left coordinate, assuming mode CORNER
   int getXCoord () { return x*20 + PADDING; }
-  int getYCoord () { return y*20 + PADDING; }
+  int getYCoord () { return y*20 + PADDING + SCORE_HEIGHT; }
 }
 
 class Snake {
@@ -61,9 +52,12 @@ class Snake {
   SnakePoint getHead () { return body.get(0); }
   color getColor () { return c; }
   
-  void addPoint() {
+  void addPoint () {
     // Coordinate is arbitrary since next move allows it to be drawn anyway
     body.add(new SnakePoint(-1, -1, c)); 
+  }
+  void addPoints (int n ) {
+    for (int i = 0; i < n; i++) { addPoint(); }
   }
   
   // Only set direction if it is not a direct conflict with the current direction
@@ -86,7 +80,7 @@ class Snake {
   }
   
   // Return true or false based on if move is okay
-  Boolean move(char mode) {    
+  Boolean move (char mode) {    
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
@@ -140,10 +134,23 @@ class Snake {
   }
   
   private Boolean hitWall (int x, int y) {
-    return x < 0 || x > (SIZE-1) || y < 0 || y > (SIZE-1);
+    return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
   }
   
   private Boolean hitFront (int x, int y) {
     return x == body.get(0).getX() && y == body.get(0).getY();
+  }
+  
+  public Boolean bodyInterfere (int x, int y) {
+    for (SnakePoint p : body) {
+      if (p.getX() == x && p.getY() == y) { return true; }
+    }
+    
+    return false;
+  }
+  
+  public Boolean eating (SnakePoint food) {
+    SnakePoint head = getHead();
+    return head.getX() == food.getX() && head.getY() == food.getY();
   }
 }

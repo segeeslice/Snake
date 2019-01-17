@@ -18,23 +18,11 @@ public class snake extends PApplet {
 
 
 
-// Total grid is 500 x 500
-// Grid is 25 x 25 with boxes of size 20
-// Defined more in SnakeClass
-
-Snake snake = new Snake ();
-SnakePoint food = randomFood();
-Boolean playing = false;
-
-final int BUTTON_DIAM = 100;
-final int FOOD_COLOR = color(250, 50, 50);
-
 public void setup () {
   // Prelim
   
   stroke(255);
   strokeWeight(2);
-  background(100);
   
   // Game
   rectMode(CORNER);
@@ -42,45 +30,60 @@ public void setup () {
   
   // Play button
   ellipseMode(CENTER);
-  textSize(40);
   textAlign(CENTER,CENTER);
 }
 
 public void draw () {
-  if (playing) { // Play the game
-    background(100);
-    
+  background(100);
+  
+  // --- SCOREBOARD ---
+  fill(70);
+  strokeWeight(0);
+  rect(0, 0, 500, SCORE_HEIGHT);
+  
+  fill(255);
+  textSize(23);
+  textAlign(RIGHT,CENTER);
+  text("Score: " + score.toString(), 490, SCORE_HEIGHT/2);
+  
+  
+  // --- GAME ---
+  strokeWeight(2);
+  if (playing) {   
     // Draw snake
     fill(snake.getColor());
     for (SnakePoint p : snake.getBody()) {
-      rect(p.getXCoord(), p.getYCoord(), BOX_SIZE, BOX_SIZE);
+      rect(p.getXCoord(), p.getYCoord(), SEG_SIZE, SEG_SIZE);
     }
     
     // Draw food
     fill(food.getColor());
-    rect(food.getXCoord(), food.getYCoord(), BOX_SIZE, BOX_SIZE);
+    rect(food.getXCoord(), food.getYCoord(), SEG_SIZE, SEG_SIZE);
     
     // Only move at certain intervals, but keep framerate high
     // to lessen input latency
     if (frameCount % 5 == 1) {
       playing = snake.moveAuto();
       
-      if (snakeEat()) {
-        food = randomFood();
-        snake.addPoint();
+      if (snake.eating(food)) {
+        newFood();
+        snake.addPoints(3);
+        score++;
       }
     }
-  } else { // Display play button    
+  } else {
     stroke(50);
     if (!mouseOverPlay()) {
       fill(200);
     } else {
       fill (255);
     }
-    ellipse(250, 250, BUTTON_DIAM, BUTTON_DIAM);
+    ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
     
     fill(0);
-    text("Play", 249, 245);
+    textSize(40);
+    textAlign(CENTER,CENTER);
+    text("Play", 249, 245+SCORE_HEIGHT);
     
     stroke(255); // Simply reset stroke after
   }
@@ -110,7 +113,8 @@ public void mousePressed () {
   // If play button is pressed
   if (mouseOverPlay()) {
     snake = new Snake();
-    food = randomFood ();
+    newFood();
+    score = 0;
     playing = true;
   }
 }
@@ -119,14 +123,43 @@ public void mousePressed () {
 
 public Boolean mouseOverPlay () {
   float disX = 250 - mouseX;
-  float disY = 250 - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < BUTTON_DIAM/2 ) {
+  float disY = 250 + SCORE_HEIGHT - mouseY;
+  if (sqrt(sq(disX) + sq(disY)) < PLAY_BUTTON_DIAM/2 ) {
     return true;
   } else {
     return false;
   }
 }
+// Stored here for the sake of keeping publicly used functions and variables in one location
+// Would run through static class, but is a bit tricky in Processing
 
+// Total grid is 500 x 500
+// Grid is 25 x 25 with boxes of size 20
+// Defined more in SnakeClass
+
+// --- CONSTANTS ---
+final int PLAY_BUTTON_DIAM = 100;
+final int FOOD_COLOR = color(250, 50, 50);
+final int BOARD_SIZE = 25;
+
+// Padding around each individual snake pixel
+final int PADDING = 2;
+// Size of each snake segment
+final int SEG_SIZE = 20-(2*PADDING);
+
+// Beginning length of the snake
+final int START_LENGTH = 5;
+
+final int SCORE_HEIGHT = 50;
+
+// --- VARIABLES ---
+Snake snake = new Snake ();
+SnakePoint food = randomFood();
+Boolean playing = false;
+Integer score = 0;
+
+
+// --- UTIL FUNCTIONS ---
 public SnakePoint randomFood () {
   int x = 0;
   int y = 0;
@@ -134,32 +167,14 @@ public SnakePoint randomFood () {
   do {
     x = PApplet.parseInt(random(25));
     y = PApplet.parseInt(random(25));
-  } while (snakeInterfere(x, y));
+  } while (snake.bodyInterfere(x, y));
   
   return new SnakePoint(x, y, FOOD_COLOR);
 }
 
-public Boolean snakeInterfere (int x, int y) {
-  for (SnakePoint p : snake.getBody()) {
-    if (p.getX() == x && p.getY() == y) { return true; }
-  }
-  
-  return false;
+public void newFood() { 
+  food = randomFood();
 }
-
-public Boolean snakeEat () {
-  SnakePoint head = snake.getHead();
-  return head.getX() == food.getX() && head.getY() == food.getY();
-}
-// Total grid is 500 x 500
-// Grid is 25 x 25 with boxes of size 20 (not including padding)
-// Unfortunately must hardcode dimensions since size(x,y) cannot take variables
-final int PADDING = 2;
-final int BOX_SIZE = 20-(2*PADDING);
-final int SIZE = 25;
-
-final int START_LENGTH = 5;
-
 // Simply store coordinates of one segment of snake
 // Based on 0-indexed 25x25 grid
 class SnakePoint {
@@ -190,7 +205,7 @@ class SnakePoint {
   // Return the coordinates to be displayed
   // Sends top left coordinate, assuming mode CORNER
   public int getXCoord () { return x*20 + PADDING; }
-  public int getYCoord () { return y*20 + PADDING; }
+  public int getYCoord () { return y*20 + PADDING + SCORE_HEIGHT; }
 }
 
 class Snake {
@@ -214,9 +229,12 @@ class Snake {
   public SnakePoint getHead () { return body.get(0); }
   public int getColor () { return c; }
   
-  public void addPoint() {
+  public void addPoint () {
     // Coordinate is arbitrary since next move allows it to be drawn anyway
     body.add(new SnakePoint(-1, -1, c)); 
+  }
+  public void addPoints (int n ) {
+    for (int i = 0; i < n; i++) { addPoint(); }
   }
   
   // Only set direction if it is not a direct conflict with the current direction
@@ -239,7 +257,7 @@ class Snake {
   }
   
   // Return true or false based on if move is okay
-  public Boolean move(char mode) {    
+  public Boolean move (char mode) {    
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
@@ -293,14 +311,27 @@ class Snake {
   }
   
   private Boolean hitWall (int x, int y) {
-    return x < 0 || x > (SIZE-1) || y < 0 || y > (SIZE-1);
+    return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
   }
   
   private Boolean hitFront (int x, int y) {
     return x == body.get(0).getX() && y == body.get(0).getY();
   }
+  
+  public Boolean bodyInterfere (int x, int y) {
+    for (SnakePoint p : body) {
+      if (p.getX() == x && p.getY() == y) { return true; }
+    }
+    
+    return false;
+  }
+  
+  public Boolean eating (SnakePoint food) {
+    SnakePoint head = getHead();
+    return head.getX() == food.getX() && head.getY() == food.getY();
+  }
 }
-  public void settings() {  size(500, 500); }
+  public void settings() {  size(500, 550); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "snake" };
     if (passedArgs != null) {

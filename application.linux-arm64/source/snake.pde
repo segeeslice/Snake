@@ -1,22 +1,10 @@
 import java.util.*;
 
-// Total grid is 500 x 500
-// Grid is 25 x 25 with boxes of size 20
-// Defined more in SnakeClass
-
-Snake snake = new Snake ();
-SnakePoint food = randomFood();
-Boolean playing = false;
-
-final int BUTTON_DIAM = 100;
-final color FOOD_COLOR = color(250, 50, 50);
-
 void setup () {
   // Prelim
-  size(500, 500);
+  size(500, 550);
   stroke(255);
   strokeWeight(2);
-  background(100);
   
   // Game
   rectMode(CORNER);
@@ -24,45 +12,60 @@ void setup () {
   
   // Play button
   ellipseMode(CENTER);
-  textSize(40);
   textAlign(CENTER,CENTER);
 }
 
 void draw () {
-  if (playing) { // Play the game
-    background(100);
-    
+  background(100);
+  
+  // --- SCOREBOARD ---
+  fill(70);
+  strokeWeight(0);
+  rect(0, 0, 500, SCORE_HEIGHT);
+  
+  fill(255);
+  textSize(23);
+  textAlign(RIGHT,CENTER);
+  text("Score: " + score.toString(), 490, SCORE_HEIGHT/2);
+  
+  
+  // --- GAME ---
+  strokeWeight(2);
+  if (playing) {   
     // Draw snake
     fill(snake.getColor());
     for (SnakePoint p : snake.getBody()) {
-      rect(p.getXCoord(), p.getYCoord(), BOX_SIZE, BOX_SIZE);
+      rect(p.getXCoord(), p.getYCoord(), SEG_SIZE, SEG_SIZE);
     }
     
     // Draw food
     fill(food.getColor());
-    rect(food.getXCoord(), food.getYCoord(), BOX_SIZE, BOX_SIZE);
+    rect(food.getXCoord(), food.getYCoord(), SEG_SIZE, SEG_SIZE);
     
     // Only move at certain intervals, but keep framerate high
     // to lessen input latency
     if (frameCount % 5 == 1) {
       playing = snake.moveAuto();
       
-      if (snakeEat()) {
-        food = randomFood();
-        snake.addPoint();
+      if (snake.eating(food)) {
+        newFood();
+        snake.addPoints(3);
+        score++;
       }
     }
-  } else { // Display play button    
+  } else {
     stroke(50);
     if (!mouseOverPlay()) {
       fill(200);
     } else {
       fill (255);
     }
-    ellipse(250, 250, BUTTON_DIAM, BUTTON_DIAM);
+    ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
     
     fill(0);
-    text("Play", 249, 245);
+    textSize(40);
+    textAlign(CENTER,CENTER);
+    text("Play", 249, 245+SCORE_HEIGHT);
     
     stroke(255); // Simply reset stroke after
   }
@@ -92,7 +95,8 @@ void mousePressed () {
   // If play button is pressed
   if (mouseOverPlay()) {
     snake = new Snake();
-    food = randomFood ();
+    newFood();
+    score = 0;
     playing = true;
   }
 }
@@ -101,35 +105,10 @@ void mousePressed () {
 
 Boolean mouseOverPlay () {
   float disX = 250 - mouseX;
-  float disY = 250 - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < BUTTON_DIAM/2 ) {
+  float disY = 250 + SCORE_HEIGHT - mouseY;
+  if (sqrt(sq(disX) + sq(disY)) < PLAY_BUTTON_DIAM/2 ) {
     return true;
   } else {
     return false;
   }
-}
-
-SnakePoint randomFood () {
-  int x = 0;
-  int y = 0;
-  
-  do {
-    x = int(random(25));
-    y = int(random(25));
-  } while (snakeInterfere(x, y));
-  
-  return new SnakePoint(x, y, FOOD_COLOR);
-}
-
-Boolean snakeInterfere (int x, int y) {
-  for (SnakePoint p : snake.getBody()) {
-    if (p.getX() == x && p.getY() == y) { return true; }
-  }
-  
-  return false;
-}
-
-Boolean snakeEat () {
-  SnakePoint head = snake.getHead();
-  return head.getX() == food.getX() && head.getY() == food.getY();
 }
