@@ -10,6 +10,7 @@ void setup () {
   // Game
   rectMode(CORNER);
   frameRate(120);
+  cycleSpeed();
 }
 
 void draw () {
@@ -21,10 +22,11 @@ void draw () {
     drawSnake();
     drawFood();
     moveSnake();
+    speedText(255);
     
   } else {
     playButton();
-    settingsButton();
+    speedButton();
   }
 }
 
@@ -55,6 +57,10 @@ void mousePressed () {
     newFood();
     score = 0;
     playing = true;
+  }
+  
+  if (!playing && mouseOverSettings()) {
+    cycleSpeed();
   }
 }
 
@@ -93,7 +99,7 @@ void scoreboard () {
   strokeWeight(2); // Reset to original
 }
 
-void settingsButton () {
+void speedButton () {
   if (!mouseOverSettings()) {
     fill(200);
   } else {
@@ -102,13 +108,16 @@ void settingsButton () {
   
   stroke(50);
   rect(10,10,100,SCORE_HEIGHT/2+10);
-  
-  fill(0);
-  textSize(23);
-  textAlign(LEFT,CENTER);
-  text("Settings", 15, SCORE_HEIGHT/2);
+  speedText(0);
   
   stroke(255); // Reset stroke after
+}
+
+void speedText(int c) {
+  fill(c);
+  textSize(23);
+  textAlign(CENTER,CENTER);
+  text(SPEED_MAP.get(speed), 60, SCORE_HEIGHT/2); 
 }
 
 void drawSnake () {
@@ -126,7 +135,7 @@ void drawFood () {
 void moveSnake () {
   // Only move at certain intervals, but keep framerate high
   // to lessen input latency
-  if (frameCount % 10 == 1) {
+  if (frameCount % speed == 0) {
     playing = snake.moveAuto();
     
     if (snake.eating(food)) {
