@@ -8,7 +8,7 @@ void setup () {
   
   // Game
   rectMode(CORNER);
-  frameRate(60);
+  frameRate(120);
   
   // Play button
   ellipseMode(CENTER);
@@ -20,15 +20,13 @@ void draw () {
   scoreboard();
   
   // --- GAME ---
-  strokeWeight(2);
   if (playing) {
     drawSnake();
     drawFood();
-    
     moveSnake();
+    
   } else {
      playButton();
-    
     // Settings button here
   }
 }
@@ -63,7 +61,7 @@ void mousePressed () {
   }
 }
 
-// UI elements
+// ---- UI ELEMENTS ----
 
 void playButton () {
   stroke(50);
@@ -90,7 +88,9 @@ void scoreboard () {
   fill(255);
   textSize(23);
   textAlign(RIGHT,CENTER);
-  text("Score: " + score.toString(), 490, SCORE_HEIGHT/2); 
+  text("Score: " + score.toString(), 490, SCORE_HEIGHT/2);
+  
+  strokeWeight(2); // Reset to original
 }
 
 void drawSnake () {
@@ -102,13 +102,13 @@ void drawSnake () {
 
 void drawFood () {
   fill(food.getColor());
-  rect(food.getXCoord(), food.getYCoord(), SEG_SIZE, SEG_SIZE); 
+  rect(food.getXCoord(), food.getYCoord(), SEG_SIZE, SEG_SIZE);
 }
 
 void moveSnake () {
   // Only move at certain intervals, but keep framerate high
   // to lessen input latency
-  if (frameCount % 5 == 1) {
+  if (frameCount % 10 == 1) {
     playing = snake.moveAuto();
     
     if (snake.eating(food)) {
@@ -119,7 +119,7 @@ void moveSnake () {
   } 
 }
 
-// Utility functions
+// ---- UTIL FUNCTIONS ----
 
 Boolean mouseOverPlay () {
   float disX = 250 - mouseX;
