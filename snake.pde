@@ -10,6 +10,7 @@ void setup () {
   // Game
   rectMode(CORNER);
   frameRate(120);
+  cycleSpeed();
 }
 
 void draw () {
@@ -21,10 +22,11 @@ void draw () {
     drawSnake();
     drawFood();
     moveSnake();
+    speedText(255);
     
   } else {
     playButton();
-    // Settings button here
+    speedButton();
   }
 }
 
@@ -56,19 +58,22 @@ void mousePressed () {
     score = 0;
     playing = true;
   }
+  
+  if (!playing && mouseOverSettings()) {
+    cycleSpeed();
+  }
 }
 
 // ---- UI ELEMENTS ----
 
 void playButton () {
-  stroke(50);
-  textAlign(CENTER,CENTER);
-
   if (!mouseOverPlay()) {
     fill(200);
   } else {
     fill(255);
   }
+  
+  stroke(50);
   ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
   
   fill(0);
@@ -80,16 +85,39 @@ void playButton () {
 }
 
 void scoreboard () {
+  // Box
   fill(70);
   strokeWeight(0);
   rect(0, 0, 500, SCORE_HEIGHT);
   
+  // Score text
   fill(255);
   textSize(23);
   textAlign(RIGHT,CENTER);
   text("Score: " + score.toString(), 490, SCORE_HEIGHT/2);
   
   strokeWeight(2); // Reset to original
+}
+
+void speedButton () {
+  if (!mouseOverSettings()) {
+    fill(200);
+  } else {
+    fill(255);
+  }
+  
+  stroke(50);
+  rect(10,10,100,SCORE_HEIGHT/2+10);
+  speedText(0);
+  
+  stroke(255); // Reset stroke after
+}
+
+void speedText(int c) {
+  fill(c);
+  textSize(23);
+  textAlign(CENTER,CENTER);
+  text(SPEED_MAP.get(speed), 60, SCORE_HEIGHT/2); 
 }
 
 void drawSnake () {
@@ -107,7 +135,7 @@ void drawFood () {
 void moveSnake () {
   // Only move at certain intervals, but keep framerate high
   // to lessen input latency
-  if (frameCount % 10 == 1) {
+  if (frameCount % speed == 0) {
     playing = snake.moveAuto();
     
     if (snake.eating(food)) {
@@ -128,4 +156,16 @@ Boolean mouseOverPlay () {
   } else {
     return false;
   }
+}
+
+Boolean mouseOverSettings() {    
+  int w = 100;
+  int h = SCORE_HEIGHT/2+10;
+  
+  int x1 = 10;
+  int y1 = 10;
+  int x2 = w + x1;
+  int y2 = h + y1;
+  
+  return (mouseX > x1 && mouseX < x2 && mouseY > y1 && mouseY < y2);
 }
