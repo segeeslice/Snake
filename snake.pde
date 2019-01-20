@@ -10,6 +10,8 @@ void setup () {
   // Game
   rectMode(CORNER);
   frameRate(120);
+  
+  // Init speed setting functionality
   cycleSpeed();
 }
 
