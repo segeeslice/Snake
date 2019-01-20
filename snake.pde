@@ -24,7 +24,7 @@ void draw () {
     
   } else {
     playButton();
-    // Settings button here
+    settingsButton();
   }
 }
 
@@ -93,6 +93,24 @@ void scoreboard () {
   strokeWeight(2); // Reset to original
 }
 
+void settingsButton () {
+  if (!mouseOverSettings()) {
+    fill(200);
+  } else {
+    fill(255);
+  }
+  
+  stroke(50);
+  rect(10,10,100,SCORE_HEIGHT/2+10);
+  
+  fill(0);
+  textSize(23);
+  textAlign(LEFT,CENTER);
+  text("Settings", 15, SCORE_HEIGHT/2);
+  
+  stroke(255); // Reset stroke after
+}
+
 void drawSnake () {
   fill(snake.getColor());
   for (SnakePoint p : snake.getBody()) {
@@ -129,4 +147,16 @@ Boolean mouseOverPlay () {
   } else {
     return false;
   }
+}
+
+Boolean mouseOverSettings() {    
+  int w = 100;
+  int h = SCORE_HEIGHT/2+10;
+  
+  int x1 = 10;
+  int y1 = 10;
+  int x2 = w + x1;
+  int y2 = h + y1;
+  
+  return (mouseX > x1 && mouseX < x2 && mouseY > y1 && mouseY < y2);
 }
