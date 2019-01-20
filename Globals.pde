@@ -24,7 +24,9 @@ Snake snake = new Snake ();
 SnakePoint food = randomFood();
 Boolean playing = false;
 Integer score = 0;
+
 Integer speed = -1;
+String speedText = "";
 
 // --- UTIL FUNCTIONS ---
 SnakePoint randomFood () {

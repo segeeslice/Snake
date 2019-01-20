@@ -24,7 +24,7 @@ void draw () {
     drawSnake();
     drawFood();
     moveSnake();
-    speedText(255);
+    speedTextDisplay(255);
     
   } else {
     playButton();
@@ -110,16 +110,16 @@ void speedButton () {
   
   stroke(50);
   rect(10,10,100,SCORE_HEIGHT/2+10);
-  speedText(0);
+  speedTextDisplay(0);
   
   stroke(255); // Reset stroke after
 }
 
-void speedText(int c) {
+void speedTextDisplay(int c) {
   fill(c);
   textSize(23);
   textAlign(CENTER,CENTER);
-  text(SPEED_MAP.get(speed), 60, SCORE_HEIGHT/2); 
+  text(speedText, 60, SCORE_HEIGHT/2); 
 }
 
 void drawSnake () {

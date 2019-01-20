@@ -27,4 +27,5 @@ Iterator initSpeedIter() {
 void cycleSpeed () {
   if (!speedIter.hasNext()) { speedIter = initSpeedIter(); }
   speed = (Integer)speedIter.next();
+  speedText = SPEED_MAP.get(speed);
 }
