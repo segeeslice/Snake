@@ -61,14 +61,13 @@ void mousePressed () {
 // ---- UI ELEMENTS ----
 
 void playButton () {
-  stroke(50);
-  textAlign(CENTER,CENTER);
-
   if (!mouseOverPlay()) {
     fill(200);
   } else {
     fill(255);
   }
+  
+  stroke(50);
   ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
   
   fill(0);
@@ -80,10 +79,12 @@ void playButton () {
 }
 
 void scoreboard () {
+  // Box
   fill(70);
   strokeWeight(0);
   rect(0, 0, 500, SCORE_HEIGHT);
   
+  // Score text
   fill(255);
   textSize(23);
   textAlign(RIGHT,CENTER);
