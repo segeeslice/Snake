@@ -5,14 +5,11 @@ void setup () {
   size(500, 550);
   stroke(255);
   strokeWeight(2);
+  ellipseMode(CENTER);
   
   // Game
   rectMode(CORNER);
   frameRate(120);
-  
-  // Play button
-  ellipseMode(CENTER);
-  textAlign(CENTER,CENTER);
 }
 
 void draw () {
@@ -26,7 +23,7 @@ void draw () {
     moveSnake();
     
   } else {
-     playButton();
+    playButton();
     // Settings button here
   }
 }
@@ -53,7 +50,7 @@ void keyPressed () {
 
 void mousePressed () {
   // If play button is pressed
-  if (mouseOverPlay()) {
+  if (!playing && mouseOverPlay()) {
     snake = new Snake();
     newFood();
     score = 0;
@@ -65,10 +62,12 @@ void mousePressed () {
 
 void playButton () {
   stroke(50);
+  textAlign(CENTER,CENTER);
+
   if (!mouseOverPlay()) {
     fill(200);
   } else {
-    fill (255);
+    fill(255);
   }
   ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
   
@@ -124,7 +123,7 @@ void moveSnake () {
 Boolean mouseOverPlay () {
   float disX = 250 - mouseX;
   float disY = 250 + SCORE_HEIGHT - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < PLAY_BUTTON_DIAM/2 ) {
+  if (sqrt(sq(disX) + sq(disY)) < PLAY_BUTTON_DIAM/2) {
     return true;
   } else {
     return false;
