@@ -23,69 +23,30 @@ public void setup () {
   
   stroke(255);
   strokeWeight(2);
+  ellipseMode(CENTER);
   
   // Game
   rectMode(CORNER);
-  frameRate(60);
+  frameRate(120);
   
-  // Play button
-  ellipseMode(CENTER);
-  textAlign(CENTER,CENTER);
+  // Init speed setting functionality
+  cycleSpeed();
 }
 
 public void draw () {
   background(100);
-  
-  // --- SCOREBOARD ---
-  fill(70);
-  strokeWeight(0);
-  rect(0, 0, 500, SCORE_HEIGHT);
-  
-  fill(255);
-  textSize(23);
-  textAlign(RIGHT,CENTER);
-  text("Score: " + score.toString(), 490, SCORE_HEIGHT/2);
-  
+  scoreboard();
   
   // --- GAME ---
-  strokeWeight(2);
-  if (playing) {   
-    // Draw snake
-    fill(snake.getColor());
-    for (SnakePoint p : snake.getBody()) {
-      rect(p.getXCoord(), p.getYCoord(), SEG_SIZE, SEG_SIZE);
-    }
+  if (playing) {
+    drawSnake();
+    drawFood();
+    moveSnake();
+    speedTextDisplay(255);
     
-    // Draw food
-    fill(food.getColor());
-    rect(food.getXCoord(), food.getYCoord(), SEG_SIZE, SEG_SIZE);
-    
-    // Only move at certain intervals, but keep framerate high
-    // to lessen input latency
-    if (frameCount % 5 == 1) {
-      playing = snake.moveAuto();
-      
-      if (snake.eating(food)) {
-        newFood();
-        snake.addPoints(3);
-        score++;
-      }
-    }
   } else {
-    stroke(50);
-    if (!mouseOverPlay()) {
-      fill(200);
-    } else {
-      fill (255);
-    }
-    ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
-    
-    fill(0);
-    textSize(40);
-    textAlign(CENTER,CENTER);
-    text("Play", 249, 245+SCORE_HEIGHT);
-    
-    stroke(255); // Simply reset stroke after
+    playButton();
+    speedButton();
   }
 }
 
@@ -111,24 +72,129 @@ public void keyPressed () {
 
 public void mousePressed () {
   // If play button is pressed
-  if (mouseOverPlay()) {
+  if (!playing && mouseOverPlay()) {
     snake = new Snake();
     newFood();
     score = 0;
     playing = true;
   }
+  
+  if (!playing && mouseOverSpeed()) {
+    cycleSpeed();
+    score = 0;
+  }
 }
 
-// Utility functions
+// ---- UI ELEMENTS ----
+
+public void playButton () {
+  if (!mouseOverPlay()) {
+    fill(200);
+  } else {
+    fill(255);
+  }
+  
+  stroke(50);
+  ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
+  
+  fill(0);
+  textSize(40);
+  textAlign(CENTER, CENTER);
+  text("Play", 249, 245+SCORE_HEIGHT);
+  
+  stroke(255); // Reset stroke after
+}
+
+public void scoreboard () {
+  // Box
+  fill(70);
+  strokeWeight(0);
+  rect(0, 0, 500, SCORE_HEIGHT);
+  
+  fill(255);
+  textSize(23);
+  
+  // Score text
+  textAlign(RIGHT, CENTER);
+  text("Score: " + score.toString(), 490, SCORE_HEIGHT/2);
+  
+  // High score text
+  textAlign(CENTER, CENTER);
+  text("Best: " + highScore.toString(), 250, SCORE_HEIGHT/2);
+  
+  strokeWeight(2); // Reset to original
+}
+
+public void speedButton () {
+  if (!mouseOverSpeed()) {
+    fill(200);
+  } else {
+    fill(255);
+  }
+  
+  stroke(50);
+  rect(10,10,100,SCORE_HEIGHT/2+10);
+  speedTextDisplay(0);
+  
+  stroke(255); // Reset stroke after
+}
+
+public void speedTextDisplay(int c) {
+  fill(c);
+  textSize(23);
+  textAlign(CENTER,CENTER);
+  text(speedText, 60, SCORE_HEIGHT/2); 
+}
+
+public void drawSnake () {
+  fill(snake.getColor());
+  for (SnakePoint p : snake.getBody()) {
+    rect(p.getXCoord(), p.getYCoord(), SEG_SIZE, SEG_SIZE);
+  } 
+}
+
+public void drawFood () {
+  fill(food.getColor());
+  rect(food.getXCoord(), food.getYCoord(), SEG_SIZE, SEG_SIZE);
+}
+
+public void moveSnake () {
+  // Only move at certain intervals, but keep framerate high
+  // to lessen input latency
+  if (frameCount % speed == 0) {
+    playing = snake.moveAuto();
+    
+    if (snake.eating(food)) {
+      newFood();
+      snake.addPoints(3);
+      score++;
+      if (score > highScore) { highScore = score; }
+    }
+  } 
+}
+
+// ---- UTIL FUNCTIONS ----
 
 public Boolean mouseOverPlay () {
   float disX = 250 - mouseX;
   float disY = 250 + SCORE_HEIGHT - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < PLAY_BUTTON_DIAM/2 ) {
+  if (sqrt(sq(disX) + sq(disY)) < PLAY_BUTTON_DIAM/2) {
     return true;
   } else {
     return false;
   }
+}
+
+public Boolean mouseOverSpeed() {    
+  int w = 100;
+  int h = SCORE_HEIGHT/2+10;
+  
+  int x1 = 10;
+  int y1 = 10;
+  int x2 = w + x1;
+  int y2 = h + y1;
+  
+  return (mouseX > x1 && mouseX < x2 && mouseY > y1 && mouseY < y2);
 }
 // Stored here for the sake of keeping publicly used functions and variables in one location
 // Would run through static class, but is a bit tricky in Processing
@@ -141,6 +207,8 @@ public Boolean mouseOverPlay () {
 final int PLAY_BUTTON_DIAM = 100;
 final int FOOD_COLOR = color(250, 50, 50);
 final int BOARD_SIZE = 25;
+final int SCORE_HEIGHT = 50;
+final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI"};
 
 // Padding around each individual snake pixel
 final int PADDING = 2;
@@ -150,14 +218,16 @@ final int SEG_SIZE = 20-(2*PADDING);
 // Beginning length of the snake
 final int START_LENGTH = 5;
 
-final int SCORE_HEIGHT = 50;
-
 // --- VARIABLES ---
 Snake snake = new Snake ();
 SnakePoint food = randomFood();
 Boolean playing = false;
 Integer score = 0;
+Integer highScore = 0;
+HashMap<String, Integer> highScoreMap = initHighScoreMap();
 
+Integer speed = -1;
+String speedText = "";
 
 // --- UTIL FUNCTIONS ---
 public SnakePoint randomFood () {
@@ -174,6 +244,14 @@ public SnakePoint randomFood () {
 
 public void newFood() { 
   food = randomFood();
+}
+
+public HashMap<String, Integer> initHighScoreMap () {
+  HashMap<String, Integer> map = new HashMap<String, Integer>();
+  for (String s: SPEED_TEXT) {
+    map.put(s, new Integer(0));
+  }
+  return map;
 }
 // Simply store coordinates of one segment of snake
 // Based on 0-indexed 25x25 grid
@@ -330,6 +408,43 @@ class Snake {
     SnakePoint head = getHead();
     return head.getX() == food.getX() && head.getY() == food.getY();
   }
+}
+// Internal speed changing functionality
+// Modifies the global variable "speed" to change how fast snake moves
+
+// Here for reference. Needs to be in Globals for high score monitoring
+// final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI"};
+
+// --- VARIABLES ---
+final Integer[] SPEED_VALS = {10, 9, 8, 6, 1};
+final HashMap<Integer, String> SPEED_MAP = initSpeedMap();
+
+Iterator speedIter = initSpeedIter();
+
+// --- INTERNAL FUNCTIONS ---
+public HashMap initSpeedMap () {
+  HashMap<Integer, String> map = new HashMap<Integer, String>();
+  for (int i = 0; i < SPEED_TEXT.length; i++) {
+    map.put(SPEED_VALS[i], SPEED_TEXT[i]);
+  }
+  return map;
+}
+
+// Initialize an iterator to cycle through SPEED_VALS array
+public Iterator initSpeedIter() {
+  return Arrays.asList(SPEED_VALS).iterator();
+}
+
+// --- COMMON USE FUNCTIONS ---
+// Infinitely cycle through SPEED_VALS and monitor difficulty high scores
+public void cycleSpeed () {
+  highScoreMap.replace(speedText, highScore);
+
+  if (!speedIter.hasNext()) { speedIter = initSpeedIter(); }
+  speed = (Integer)speedIter.next();
+  speedText = SPEED_MAP.get(speed);
+  
+  highScore = highScoreMap.get(speedText);
 }
   public void settings() {  size(500, 550); }
   static public void main(String[] passedArgs) {
