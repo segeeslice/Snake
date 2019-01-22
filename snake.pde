@@ -61,8 +61,9 @@ void mousePressed () {
     playing = true;
   }
   
-  if (!playing && mouseOverSettings()) {
+  if (!playing && mouseOverSpeed()) {
     cycleSpeed();
+    score = 0;
   }
 }
 
@@ -107,7 +108,7 @@ void scoreboard () {
 }
 
 void speedButton () {
-  if (!mouseOverSettings()) {
+  if (!mouseOverSpeed()) {
     fill(200);
   } else {
     fill(255);
@@ -166,7 +167,7 @@ Boolean mouseOverPlay () {
   }
 }
 
-Boolean mouseOverSettings() {    
+Boolean mouseOverSpeed() {    
   int w = 100;
   int h = SCORE_HEIGHT/2+10;
   

@@ -1,9 +1,11 @@
 // Internal speed changing functionality
 // Modifies the global variable "speed" to change how fast snake moves
 
+// Here for reference. Needs to be in Globals for high score monitoring
+// final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI"};
+
 // --- VARIABLES ---
 final Integer[] SPEED_VALS = {10, 9, 8, 6, 1};
-final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI"};
 final HashMap<Integer, String> SPEED_MAP = initSpeedMap();
 
 Iterator speedIter = initSpeedIter();
@@ -23,9 +25,13 @@ Iterator initSpeedIter() {
 }
 
 // --- COMMON USE FUNCTIONS ---
-// Infinitely cycle through SPEED_VALS
+// Infinitely cycle through SPEED_VALS and monitor difficulty high scores
 void cycleSpeed () {
+  highScoreMap.replace(speedText, highScore);
+
   if (!speedIter.hasNext()) { speedIter = initSpeedIter(); }
   speed = (Integer)speedIter.next();
   speedText = SPEED_MAP.get(speed);
+  
+  highScore = highScoreMap.get(speedText);
 }
