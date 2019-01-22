@@ -80,7 +80,7 @@ void playButton () {
   
   fill(0);
   textSize(40);
-  textAlign(CENTER,CENTER);
+  textAlign(CENTER, CENTER);
   text("Play", 249, 245+SCORE_HEIGHT);
   
   stroke(255); // Reset stroke after
@@ -92,11 +92,16 @@ void scoreboard () {
   strokeWeight(0);
   rect(0, 0, 500, SCORE_HEIGHT);
   
-  // Score text
   fill(255);
   textSize(23);
-  textAlign(RIGHT,CENTER);
+  
+  // Score text
+  textAlign(RIGHT, CENTER);
   text("Score: " + score.toString(), 490, SCORE_HEIGHT/2);
+  
+  // High score text
+  textAlign(CENTER, CENTER);
+  text("Best: " + highScore.toString(), 250, SCORE_HEIGHT/2);
   
   strokeWeight(2); // Reset to original
 }
@@ -144,6 +149,7 @@ void moveSnake () {
       newFood();
       snake.addPoints(3);
       score++;
+      if (score > highScore) { highScore = score; }
     }
   } 
 }
