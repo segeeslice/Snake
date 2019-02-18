@@ -13,23 +13,16 @@ class Neural {
     char dl = leftDir (d);
     char dr = rightDir(d);
     
-    int lx = leftX    (d, headX);
-    int rx = rightX   (d, headX);
-    int sx = straightX(d, headX);
-    
-    int ly = leftY    (d, headY);
-    int ry = rightY   (d, headY);
-    int sy = straightY(d, headY);
-    
     // --- HIDDEN LAYER ---
-    Boolean leftCollide =     snake.hitWall(lx, ly) || snake.hitBody(lx, ly);
-    Boolean rightCollide =    snake.hitWall(rx, ry) || snake.hitBody(rx, ry);
-    Boolean straightCollide = snake.hitWall(sx, sy) || snake.hitBody(sx, sy);
+    int ld = obsDist(dl, headX, headY);
+    int rd = obsDist(dr, headX, headY);
+    int sd = obsDist(d,  headX, headY);
     
-    // --- OUTPUT LAYER ---
-    if (!straightCollide)   { return snake.moveAuto(); }
-    else if (!leftCollide)  { snake.setDirection(dl); return snake.moveAuto(); }
-    else if (!rightCollide) { snake.setDirection(dr); return snake.moveAuto(); }
+    
+    // --- OUTPUT LAYER ---    
+    if (ld > rd && ld > sd) { snake.setDirection(dl); return snake.moveAuto(); }
+    else if (rd > ld && rd > sd) { snake.setDirection(dr); return snake.moveAuto(); }
+    else if (sd > ld && sd > rd) { return snake.moveAuto(); }
     else { snake.setDirection(randomDir(d, dl, dr)); return snake.moveAuto(); }
   }
   
@@ -74,69 +67,43 @@ class Neural {
     } 
   }
   
-  private int leftX (char d, int x) {
+  // return distance to nearest obstruction in the passed direction
+  private int obsDist (char d, int x, int y) {
+    int dist = 0;
+    
     switch (d) {
-      case 'U':
-        return x-1;
       case 'D':
-        return x+1;
-      default:
-        return x;
-    }
-  }
-  
-  private int rightX (char d, int x) {
-    switch (d) {
+        for (int i = y+1; i < BOARD_SIZE; i++) {
+          if (snake.hitBody(x, i)) { return dist; }
+          dist++;
+        }
+        break;
+        
       case 'U':
-        return x+1;
-      case 'D':
-        return x-1;
-      default:
-        return x;
-    }
-  }
-  
-  private int straightX (char d, int x) {
-    switch (d) {
+        for (int i = y-1; i >= 0; i--) {
+          if (snake.hitBody(x, i)) { return dist; }
+          dist++;
+        }
+        break;
+        
       case 'R':
-        return x+1;
+        for (int i = x+1; i < BOARD_SIZE; i++) {
+          if (snake.hitBody(i, y)) { return dist; }
+          dist++;
+        }
+        break;
+        
       case 'L':
-        return x-1;
+        for (int i = x-1; i >= 0; i--) {
+          if (snake.hitBody(i, y)) { return dist; }
+          dist++;
+        }
+        break;
+        
       default:
-        return x;
+        println("Something went wrong");
     }
-  }
-  
-  private int leftY (char d, int y) {
-   switch (d) {
-    case 'R':
-      return y-1;
-    case 'L':
-      return y+1;
-    default:
-      return y;
-   }
-  }
-  
-  private int rightY (char d, int y) {
-    switch (d) {
-      case 'R':
-        return y+1;
-      case 'L':
-        return y-1;
-      default:
-        return y;
-    }
-  }
-  
-  private int straightY (char d, int y) {
-    switch (d) {
-      case 'U':
-        return y+1;
-      case 'D':
-        return y-1;
-      default:
-        return y;
-    }
-  }
+    
+    return dist;
+  } 
 }
