@@ -35,3 +35,7 @@ void cycleSpeed () {
   
   highScore = highScoreMap.get(speedText);
 }
+
+String getSpeedText () {
+  return SPEED_MAP.get(speed); 
+}
