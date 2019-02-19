@@ -17,22 +17,27 @@ class Neural {
     int ld = obsDist(dl, headX, headY);
     int rd = obsDist(dr, headX, headY);
     int sd = obsDist(d,  headX, headY);
-    
-    
+
     // --- OUTPUT LAYER ---    
     if (ld > rd && ld > sd) { snake.setDirection(dl); return snake.moveAuto(); }
     else if (rd > ld && rd > sd) { snake.setDirection(dr); return snake.moveAuto(); }
     else if (sd > ld && sd > rd) { return snake.moveAuto(); }
-    else { snake.setDirection(randomDir(d, dl, dr)); return snake.moveAuto(); }
+    else {
+      // Add some extra processing to ensure we do not randomly go right into obstruction
+      ArrayList<Character> nonZero = new ArrayList<Character>();
+      if (ld != 0) { nonZero.add(dl); }
+      if (rd != 0) { nonZero.add(dr); }
+      if (sd != 0) { nonZero.add(d); }
+      
+      snake.setDirection(randomDir(nonZero)); 
+      return snake.moveAuto(); 
+    }
   }
   
   // ---- UTIL FUNCTIONS ----
-  private char randomDir (char d1, char d2, char d3) {
-     float val = random(3);
-     
-     if (val < 1)      { return d1; }
-     else if (val < 2) { return d2; }
-     else              { return d3; }
+  private char randomDir (ArrayList<Character> dirs) {
+     int randIndex = (int)floor(random(dirs.size()));
+     return dirs.get(randIndex);
   }
   
   private char leftDir (char d) {
