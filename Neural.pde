@@ -29,15 +29,15 @@ class Neural {
       if (rd != 0) { nonZero.add(dr); }
       if (sd != 0) { nonZero.add(d); }
       
-      snake.setDirection(randomDir(nonZero)); 
+      snake.setDirection(randomDir(nonZero, d));
       return snake.moveAuto(); 
     }
   }
   
   // ---- UTIL FUNCTIONS ----
-  private char randomDir (ArrayList<Character> dirs) {
+  private char randomDir (ArrayList<Character> dirs, char def) {
      int randIndex = (int)floor(random(dirs.size()));
-     return dirs.get(randIndex);
+     return dirs.size() > 0 ? dirs.get(randIndex) : def;
   }
   
   private char leftDir (char d) {
