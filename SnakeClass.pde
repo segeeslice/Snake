@@ -44,7 +44,7 @@ class Snake {
     c = color(255);
     
     for (int i = START_LENGTH; i >= 0; i--) {
-      body.add(new SnakePoint(i, 0, c));
+      body.add(new SnakePoint(0, 0, c));
     }
   }
   
