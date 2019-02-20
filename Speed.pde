@@ -5,7 +5,7 @@
 // final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI"};
 
 // --- VARIABLES ---
-final Integer[] SPEED_VALS = {10, 9, 8, 6, 1};
+final Integer[] SPEED_VALS = {10, 9, 8, 6, 2};
 final HashMap<Integer, String> SPEED_MAP = initSpeedMap();
 
 Iterator speedIter = initSpeedIter();

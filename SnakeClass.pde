@@ -116,7 +116,7 @@ class Snake {
   }
   
   private Boolean moveNext (int i, int x, int y) {
-    if (hitFront(x, y)) {
+    if (hitFront(x, y) && i < body.size() - 1) {
       return false;
     } else if (i < body.size()) {
       SnakePoint s = body.get(i);

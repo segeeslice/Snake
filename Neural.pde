@@ -7,27 +7,46 @@ class Neural {
     // --- INPUT DATA ---
     int headX = head.getX();
     int headY = head.getY();
-    char d = snake.getDirection();
     
-    // Quick reference processing
+    char d = snake.getDirection();
     char dl = leftDir (d);
     char dr = rightDir(d);
     
-    // --- HIDDEN LAYER ---
+    // Obstruction distances
     int ld = obsDist(dl, headX, headY);
     int rd = obsDist(dr, headX, headY);
     int sd = obsDist(d,  headX, headY);
+    
+    // Food coordinates
+    int fx = food.getX();
+    int fy = food.getY();
+    
+    // --- HIDDEN LAYER ---
+    
+    // Biases (self-learn here?)
+    float lb = .5;
+    float rb = .5;
+    float sb = .7;
+    
+    int flb = foodBias(headX, headY, fx, fy, dl);
+    int frb = foodBias(headX, headY, fx, fy, dr);
+    int fsb = foodBias(headX, headY, fx, fy, d);
+
+    // Output weights
+    float lw = ld * lb * flb;
+    float rw = rd * rb * frb;
+    float sw = sd * sb * fsb;
 
     // --- OUTPUT LAYER ---    
-    if (ld > rd && ld > sd) { snake.setDirection(dl); return snake.moveAuto(); }
-    else if (rd > ld && rd > sd) { snake.setDirection(dr); return snake.moveAuto(); }
-    else if (sd > ld && sd > rd) { return snake.moveAuto(); }
+    if (lw > rw && lw > sw) { snake.setDirection(dl); return snake.moveAuto(); }
+    else if (rw > lw && rw > sw) { snake.setDirection(dr); return snake.moveAuto(); }
+    else if (sw > lw && sw > rw) { return snake.moveAuto(); }
     else {
       // Add some extra processing to ensure we do not randomly go right into obstruction
       ArrayList<Character> nonZero = new ArrayList<Character>();
-      if (ld != 0) { nonZero.add(dl); }
-      if (rd != 0) { nonZero.add(dr); }
-      if (sd != 0) { nonZero.add(d); }
+      if (lw != 0) { nonZero.add(dl); }
+      if (rw != 0) { nonZero.add(dr); }
+      if (sw != 0) { nonZero.add(d); }
       
       snake.setDirection(randomDir(nonZero, d));
       return snake.moveAuto(); 
@@ -110,5 +129,29 @@ class Neural {
     }
     
     return dist;
-  } 
+  }
+  
+  private int foodBias (int headX, int headY, int foodX, int foodY, char d) {
+    int xDiff = foodX-headX;
+    int yDiff = foodY-headY;
+    
+    switch (d) {
+      case 'U':
+        if (yDiff < 0) { return yDiff + 25; }
+        break;
+      case 'D':
+        if (yDiff > 0) { return -yDiff + 25; }
+        break;
+      case 'R':
+        if (xDiff > 0) { return -xDiff + 25; }
+        break;
+      case 'L':
+        if (xDiff < 0) { return xDiff + 25; }
+        break;
+      default:
+        println("Something went wrong oh no gee dang");
+    }
+    
+    return 1;
+  }
 }
