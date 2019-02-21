@@ -44,13 +44,16 @@ class Snake {
     c = color(255);
     
     for (int i = START_LENGTH; i >= 0; i--) {
-      body.add(new SnakePoint(i, 0, c));
+      body.add(new SnakePoint(0, 0, c));
     }
   }
   
   List<SnakePoint> getBody () { return body; }
   SnakePoint getHead () { return body.get(0); }
-  color getColor () { return c; }
+  color getColor () { return c; } 
+  
+  void setDirection (char d) { direction = d; }
+  char getDirection () { return direction; }
   
   void addPoint () {
     // Coordinate is arbitrary since next move allows it to be drawn anyway
@@ -59,9 +62,6 @@ class Snake {
   void addPoints (int n ) {
     for (int i = 0; i < n; i++) { addPoint(); }
   }
-  
-  // Only set direction if it is not a direct conflict with the current direction
-  void setDirection (char d) { direction = d; }
   
   private Boolean opposite (char x, char y) {
     return (x == 'U' && y == 'D') ||
@@ -116,7 +116,7 @@ class Snake {
   }
   
   private Boolean moveNext (int i, int x, int y) {
-    if (hitFront(x, y)) {
+    if (hitFront(x, y) && i < body.size() - 1) {
       return false;
     } else if (i < body.size()) {
       SnakePoint s = body.get(i);
@@ -133,20 +133,28 @@ class Snake {
     }
   }
   
-  private Boolean hitWall (int x, int y) {
+  // Check if the given x and y will hit a wall
+  public Boolean hitWall (int x, int y) {
     return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
   }
   
-  private Boolean hitFront (int x, int y) {
-    return x == body.get(0).getX() && y == body.get(0).getY();
-  }
-  
-  public Boolean bodyInterfere (int x, int y) {
-    for (SnakePoint p : body) {
+  // Check if the given x and y of the head will hit the body on movement
+  // Excludes last snake point since it will move out of the way
+  public Boolean hitBody (int x, int y) {
+    SnakePoint p;
+    
+    for (int i = 0; i < body.size() - 1; i++) {
+      p = body.get(i);
       if (p.getX() == x && p.getY() == y) { return true; }
     }
     
     return false;
+  }
+  
+  // Check if the x and y of a body piece interfere with the head of the snake
+  // For use in movement checks
+  public Boolean hitFront (int x, int y) {
+    return x == body.get(0).getX() && y == body.get(0).getY();
   }
   
   public Boolean eating (SnakePoint food) {

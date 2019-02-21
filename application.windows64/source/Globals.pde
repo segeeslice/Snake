@@ -22,6 +22,7 @@ final int START_LENGTH = 5;
 
 // --- VARIABLES ---
 Snake snake = new Snake ();
+Neural NAI = new Neural();
 SnakePoint food = randomFood();
 Boolean playing = false;
 Integer score = 0;
@@ -39,7 +40,7 @@ SnakePoint randomFood () {
   do {
     x = int(random(25));
     y = int(random(25));
-  } while (snake.bodyInterfere(x, y));
+  } while (snake.hitBody(x, y));
   
   return new SnakePoint(x, y, FOOD_COLOR);
 }
