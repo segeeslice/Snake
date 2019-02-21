@@ -144,7 +144,11 @@ void moveSnake () {
   // Only move at certain intervals, but keep framerate high
   // to lessen input latency
   if (frameCount % speed == 0) {
-    playing = snake.moveAuto();
+    if (getSpeedText() == "AI") {
+      playing = NAI.processInput();
+    } else {
+      playing = snake.moveAuto();
+    }
     
     if (snake.eating(food)) {
       newFood();
