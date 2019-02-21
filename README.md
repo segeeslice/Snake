@@ -4,6 +4,8 @@ A simple project I'm making for fun to learn the [Processing framework](https://
 
 Introduced to Processing through and strongly inspired by the videos from [Code Bullet](https://www.youtube.com/channel/UC0e3QhIYukixgh5VVpKHH9Q/).
 
+See CHANGELOG.md in the base directory for post-release version updates.
+
 #### How to use (general)
 - Download repo and locate the application.* folders in the base directory
 - Run the executable for your given OS
