@@ -142,28 +142,29 @@ class Neural {
   }
   
   // return if the next obstruction is a piece of the snake
+  // Takes in x and y coordinates of NEXT head location
   private Boolean hitSnake (int x, int y, char d) {    
     switch (d) {
       case 'D':
-        for (int i = y+1; i < BOARD_SIZE; i++) {
+        for (int i = y; i < BOARD_SIZE; i++) {
           if (snake.hitBody(x, i)) { return true; }
         }
         break;
         
       case 'U':
-        for (int i = y-1; i >= 0; i--) {
+        for (int i = y; i >= 0; i--) {
           if (snake.hitBody(x, i)) { return true; }
         }
         break;
         
       case 'R':
-        for (int i = x+1; i < BOARD_SIZE; i++) {
+        for (int i = x; i < BOARD_SIZE; i++) {
           if (snake.hitBody(i, y)) { return true; }
         }
         break;
         
       case 'L':
-        for (int i = x-1; i >= 0; i--) {
+        for (int i = x; i >= 0; i--) {
           if (snake.hitBody(i, y)) { return true; }
         }
         break;
@@ -226,7 +227,22 @@ class Neural {
     
     
     for (Character dir : dirs) {
-        if (!hitSnake(headX, headY, dir)) { return false; }
+      switch (d) {
+        case 'U':
+          if (!hitSnake(headX, headY-1, dir)) { return false; }
+          break;
+        case 'D':
+          if (!hitSnake(headX, headY+1, dir)) { return false; }
+          break;
+        case 'R':
+          if (!hitSnake(headX+1, headY, dir)) { return false; }
+          break;
+        case 'L':
+          if (!hitSnake(headX-1, headY, dir)) { return false; }
+          break;
+        default:
+          println("Something went wrong oh no gee dang");
+      }
     }
     return true;
   }
