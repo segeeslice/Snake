@@ -58,50 +58,13 @@ class Neural {
       if (rw != 0) { nonZero.add(dr); }
       if (sw != 0) { nonZero.add(d); }
       
-      snake.setDirection(randomDir(nonZero, d));
+      snake.setDirection((char)randomElem(nonZero, d));
       return snake.moveAuto(); 
     }
   }
   
   // ---- UTIL FUNCTIONS ----
-  private char randomDir (ArrayList<Character> dirs, char def) {
-     int randIndex = (int)floor(random(dirs.size()));
-     return dirs.size() > 0 ? dirs.get(randIndex) : def;
-  }
-  
-  private char leftDir (char d) {
-    switch (d) {
-      case 'U':
-        return 'L';
-      case 'D':
-        return 'R';
-      case 'R':
-        return 'U';
-      case 'L':
-        return 'D';
-      default:
-        println("Oopsy whoopsy");
-        return d;
-    } 
-  }
-  
-  private char rightDir (char d) {
-    switch (d) {
-      case 'U':
-        return 'R';
-      case 'D':
-        return 'L';
-      case 'R':
-        return 'D';
-      case 'L':
-        return 'U';
-      default:
-        println("Oopsy whoopsy");
-        return d;
-    } 
-  }
-  
-  // return distance to nearest obstruction in the passed direction
+  // Return distance to nearest obstruction in the passed direction
   private int obsDist (char d, int x, int y) {
     int dist = 0;
     
