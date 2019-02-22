@@ -23,10 +23,20 @@ class Neural {
     
     // --- HIDDEN LAYER ---
     
-    // Biases (self-learn here?)
+    Boolean leftTrapDetect = trapDetect(headX, headY, dl);
+    Boolean rightTrapDetect = trapDetect(headX, headY, dr);
+    Boolean straightTrapDetect = trapDetect(headX, headY, d);
+    
+    // Biases
     float lb = .5;
     float rb = .5;
     float sb = .7;
+    
+    if (!(leftTrapDetect && rightTrapDetect && straightTrapDetect)) {
+      lb = leftTrapDetect ? 0 : lb;
+      rb = rightTrapDetect ? 0 : rb;
+      sb = straightTrapDetect ? 0 : sb;
+    }
     
     int flb = foodBias(headX, headY, fx, fy, dl);
     int frb = foodBias(headX, headY, fx, fy, dr);
@@ -131,6 +141,40 @@ class Neural {
     return dist;
   }
   
+  // return if the next obstruction is a piece of the snake
+  private Boolean hitSnake (int x, int y, char d) {    
+    switch (d) {
+      case 'D':
+        for (int i = y+1; i < BOARD_SIZE; i++) {
+          if (snake.hitBody(x, i)) { return true; }
+        }
+        break;
+        
+      case 'U':
+        for (int i = y-1; i >= 0; i--) {
+          if (snake.hitBody(x, i)) { return true; }
+        }
+        break;
+        
+      case 'R':
+        for (int i = x+1; i < BOARD_SIZE; i++) {
+          if (snake.hitBody(i, y)) { return true; }
+        }
+        break;
+        
+      case 'L':
+        for (int i = x-1; i >= 0; i--) {
+          if (snake.hitBody(i, y)) { return true; }
+        }
+        break;
+        
+      default:
+        println("Something went wrong");
+    }
+    
+    return false;
+  }
+  
   private int foodBias (int headX, int headY, int foodX, int foodY, char d) {
     int xDiff = foodX-headX;
     int yDiff = foodY-headY;
@@ -153,5 +197,37 @@ class Neural {
     }
     
     return 1;
+  }
+
+  // Return if we will be trapped 
+  Boolean trapDetect (int headX, int headY, char d) {
+    Vector<Character> dirs = new Vector<Character>();
+    dirs.add('U');
+    dirs.add('D');
+    dirs.add('L');
+    dirs.add('R');
+    
+    switch (d) {
+      case 'U':
+        dirs.remove((Character)'D');
+        break;
+      case 'D':
+        dirs.remove((Character)'U');
+        break;
+      case 'R':
+        dirs.remove((Character)'L');
+        break;
+      case 'L':
+        dirs.remove((Character)'R');
+        break;
+      default:
+        println("Something went wrong oh no gee dang");
+    }
+    
+    
+    for (Character dir : dirs) {
+        if (!hitSnake(headX, headY, dir)) { return false; }
+    }
+    return true;
   }
 }
