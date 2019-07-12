@@ -1,3 +1,8 @@
+# v1.2.0
+### Changes
+- Improved AI to detect and avoid "traps", or areas in which the food is surrounded by 3 walls
+  - Average score of ~40 now! (Compared to the previous ~20)
+
 # v1.1.0
 
 ### Changes
