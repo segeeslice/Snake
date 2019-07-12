@@ -56,3 +56,41 @@ HashMap<String, Integer> initHighScoreMap () {
   }
   return map;
 }
+
+// Get a random elem from a passed list. If the list is of size 0, return the passed default.
+Object randomElem (ArrayList<?> selection, Object def) {
+  int randIndex = (int)floor(random(selection.size()));
+  return selection.size() > 0 ? selection.get(randIndex) : def;
+}
+
+char rightDir (char d) {
+  switch (d) {
+    case 'U':
+      return 'R';
+    case 'D':
+      return 'L';
+    case 'R':
+      return 'D';
+    case 'L':
+      return 'U';
+    default:
+      println("Oopsy whoopsy");
+      return d;
+  } 
+}
+
+char leftDir (char d) {
+  switch (d) {
+    case 'U':
+      return 'L';
+    case 'D':
+      return 'R';
+    case 'R':
+      return 'U';
+    case 'L':
+      return 'D';
+    default:
+      println("Oopsy whoopsy");
+      return d;
+  } 
+}

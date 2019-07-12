@@ -258,6 +258,44 @@ public HashMap<String, Integer> initHighScoreMap () {
   }
   return map;
 }
+
+// Get a random elem from a passed list. If the list is of size 0, return the passed default.
+public Object randomElem (ArrayList<?> selection, Object def) {
+  int randIndex = (int)floor(random(selection.size()));
+  return selection.size() > 0 ? selection.get(randIndex) : def;
+}
+
+public char rightDir (char d) {
+  switch (d) {
+    case 'U':
+      return 'R';
+    case 'D':
+      return 'L';
+    case 'R':
+      return 'D';
+    case 'L':
+      return 'U';
+    default:
+      println("Oopsy whoopsy");
+      return d;
+  } 
+}
+
+public char leftDir (char d) {
+  switch (d) {
+    case 'U':
+      return 'L';
+    case 'D':
+      return 'R';
+    case 'R':
+      return 'U';
+    case 'L':
+      return 'D';
+    default:
+      println("Oopsy whoopsy");
+      return d;
+  } 
+}
 class Neural {  
   Neural () {}
   
@@ -283,10 +321,20 @@ class Neural {
     
     // --- HIDDEN LAYER ---
     
-    // Biases (self-learn here?)
+    Boolean leftTrapDetect = trapDetect(headX, headY, dl);
+    Boolean rightTrapDetect = trapDetect(headX, headY, dr);
+    Boolean straightTrapDetect = trapDetect(headX, headY, d);
+    
+    // Biases
     float lb = .5f;
     float rb = .5f;
     float sb = .7f;
+    
+    if (!(leftTrapDetect && rightTrapDetect && straightTrapDetect)) {
+      lb = leftTrapDetect ? 0 : lb;
+      rb = rightTrapDetect ? 0 : rb;
+      sb = straightTrapDetect ? 0 : sb;
+    }
     
     int flb = foodBias(headX, headY, fx, fy, dl);
     int frb = foodBias(headX, headY, fx, fy, dr);
@@ -308,50 +356,13 @@ class Neural {
       if (rw != 0) { nonZero.add(dr); }
       if (sw != 0) { nonZero.add(d); }
       
-      snake.setDirection(randomDir(nonZero, d));
+      snake.setDirection((char)randomElem(nonZero, d));
       return snake.moveAuto(); 
     }
   }
   
   // ---- UTIL FUNCTIONS ----
-  private char randomDir (ArrayList<Character> dirs, char def) {
-     int randIndex = (int)floor(random(dirs.size()));
-     return dirs.size() > 0 ? dirs.get(randIndex) : def;
-  }
-  
-  private char leftDir (char d) {
-    switch (d) {
-      case 'U':
-        return 'L';
-      case 'D':
-        return 'R';
-      case 'R':
-        return 'U';
-      case 'L':
-        return 'D';
-      default:
-        println("Oopsy whoopsy");
-        return d;
-    } 
-  }
-  
-  private char rightDir (char d) {
-    switch (d) {
-      case 'U':
-        return 'R';
-      case 'D':
-        return 'L';
-      case 'R':
-        return 'D';
-      case 'L':
-        return 'U';
-      default:
-        println("Oopsy whoopsy");
-        return d;
-    } 
-  }
-  
-  // return distance to nearest obstruction in the passed direction
+  // Return distance to nearest obstruction in the passed direction
   private int obsDist (char d, int x, int y) {
     int dist = 0;
     
@@ -391,6 +402,41 @@ class Neural {
     return dist;
   }
   
+  // return if the next obstruction is a piece of the snake
+  // Takes in x and y coordinates of NEXT head location
+  private Boolean hitSnake (int x, int y, char d) {    
+    switch (d) {
+      case 'D':
+        for (int i = y; i < BOARD_SIZE; i++) {
+          if (snake.hitBody(x, i)) { return true; }
+        }
+        break;
+        
+      case 'U':
+        for (int i = y; i >= 0; i--) {
+          if (snake.hitBody(x, i)) { return true; }
+        }
+        break;
+        
+      case 'R':
+        for (int i = x; i < BOARD_SIZE; i++) {
+          if (snake.hitBody(i, y)) { return true; }
+        }
+        break;
+        
+      case 'L':
+        for (int i = x; i >= 0; i--) {
+          if (snake.hitBody(i, y)) { return true; }
+        }
+        break;
+        
+      default:
+        println("Something went wrong");
+    }
+    
+    return false;
+  }
+  
   private int foodBias (int headX, int headY, int foodX, int foodY, char d) {
     int xDiff = foodX-headX;
     int yDiff = foodY-headY;
@@ -413,6 +459,53 @@ class Neural {
     }
     
     return 1;
+  }
+
+  // Return if we will be trapped 
+  public Boolean trapDetect (int headX, int headY, char d) {
+    Vector<Character> dirs = new Vector<Character>();
+    dirs.add('U');
+    dirs.add('D');
+    dirs.add('L');
+    dirs.add('R');
+    
+    switch (d) {
+      case 'U':
+        dirs.remove((Character)'D');
+        break;
+      case 'D':
+        dirs.remove((Character)'U');
+        break;
+      case 'R':
+        dirs.remove((Character)'L');
+        break;
+      case 'L':
+        dirs.remove((Character)'R');
+        break;
+      default:
+        println("Something went wrong oh no gee dang");
+    }
+    
+    
+    for (Character dir : dirs) {
+      switch (d) {
+        case 'U':
+          if (!hitSnake(headX, headY-1, dir)) { return false; }
+          break;
+        case 'D':
+          if (!hitSnake(headX, headY+1, dir)) { return false; }
+          break;
+        case 'R':
+          if (!hitSnake(headX+1, headY, dir)) { return false; }
+          break;
+        case 'L':
+          if (!hitSnake(headX-1, headY, dir)) { return false; }
+          break;
+        default:
+          println("Something went wrong oh no gee dang");
+      }
+    }
+    return true;
   }
 }
 // Simply store coordinates of one segment of snake
@@ -586,7 +679,7 @@ class Snake {
 // final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI"};
 
 // --- VARIABLES ---
-final Integer[] SPEED_VALS = {10, 9, 8, 6, 2};
+final Integer[] SPEED_VALS = {10, 9, 8, 6, 5};
 final HashMap<Integer, String> SPEED_MAP = initSpeedMap();
 
 Iterator speedIter = initSpeedIter();
