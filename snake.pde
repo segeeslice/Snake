@@ -146,6 +146,8 @@ void moveSnake () {
   if (frameCount % speed == 0) {
     if (getSpeedText() == "AI") {
       playing = NAI.processInput();
+    } else if (getSpeedText() == "Brute") {
+      playing = BAI.processInput();
     } else {
       playing = snake.moveAuto();
     }

@@ -115,6 +115,7 @@ class Snake {
     }
   }
   
+  // Recursive function to move all parts of the body
   private Boolean moveNext (int i, int x, int y) {
     if (hitFront(x, y) && i < body.size() - 1) {
       return false;

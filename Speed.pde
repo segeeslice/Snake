@@ -2,10 +2,10 @@
 // Modifies the global variable "speed" to change how fast snake moves
 
 // Here for reference. Needs to be in Globals for high score monitoring
-// final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI"};
+// final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI", "Brute"};
 
 // --- VARIABLES ---
-final Integer[] SPEED_VALS = {10, 9, 8, 6, 5};
+final Integer[] SPEED_VALS = {10, 9, 8, 6, 5, 12};
 final HashMap<Integer, String> SPEED_MAP = initSpeedMap();
 
 Iterator speedIter = initSpeedIter();
