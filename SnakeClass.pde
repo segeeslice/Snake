@@ -4,27 +4,27 @@ class SnakePoint {
   private int x;
   private int y;
   private color c;
-  
+
   SnakePoint (int x_in, int y_in) {
     x = x_in;
     y = y_in;
     c = color(255);
   }
-  
+
   SnakePoint (int x_in, int y_in, color c_in) {
     x = x_in;
     y = y_in;
     c = c_in;
   }
-  
-  color getColor () { return c; }
-  void setColor (color c_in) { c = c_in; }
-  
-  int getX () { return x; }
-  int getY () { return y; }
-  void setX (int x_in) { x = x_in; }
-  void setY (int y_in) { y = y_in; }
-  
+
+  public color getColor () { return c; }
+  public void setColor (color c_in) { c = c_in; }
+
+  public int getX () { return x; }
+  public int getY () { return y; }
+  public void setX (int x_in) { x = x_in; }
+  public void setY (int y_in) { y = y_in; }
+
   // Return the coordinates to be displayed
   // Sends top left coordinate, assuming mode CORNER
   int getXCoord () { return x*20 + PADDING; }
@@ -36,40 +36,41 @@ class Snake {
   private char direction;
   private char directionLast;
   private color c;
-  
+
   Snake () {
     body = new Vector<SnakePoint> ();
     direction = 'R';
     directionLast = 'R';
     c = color(255);
-    
+
     for (int i = START_LENGTH; i >= 0; i--) {
       body.add(new SnakePoint(0, 0, c));
     }
   }
-  
+
   List<SnakePoint> getBody () { return body; }
+  color getColor () { return c; }
+  void setColor (color c_in) { c = c_in; }
   SnakePoint getHead () { return body.get(0); }
-  color getColor () { return c; } 
-  
+
   void setDirection (char d) { direction = d; }
   char getDirection () { return direction; }
-  
+
   void addPoint () {
     // Coordinate is arbitrary since next move allows it to be drawn anyway
-    body.add(new SnakePoint(-1, -1, c)); 
+    body.add(new SnakePoint(-1, -1, c));
   }
-  void addPoints (int n ) {
+  void addPoints (int n) {
     for (int i = 0; i < n; i++) { addPoint(); }
   }
-  
+
   private Boolean opposite (char x, char y) {
     return (x == 'U' && y == 'D') ||
            (x == 'D' && y == 'U') ||
            (x == 'R' && y == 'L') ||
            (x == 'L' && y == 'R');
   }
-  
+
   // Only move in direction if it is not a direct conflict with the past direction
   Boolean moveAuto () {
     if (!opposite(direction, directionLast)) {
@@ -78,15 +79,15 @@ class Snake {
       return move(directionLast);
     }
   }
-  
+
   // Return true or false based on if move is okay
-  Boolean move (char mode) {    
+  Boolean move (char mode) {
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
-    
+
     directionLast = mode;
-    
+
     // Move front item
     switch (mode) {
       case 'U':
@@ -104,17 +105,17 @@ class Snake {
       default:
         println("Oopsy whoopsy");
     }
-    
+
     if (hitWall(s.getX(), s.getY())) {
       return false;
     } else {
       body.set(0, s);
-      
+
       // Move remaining items to follow front
       return moveNext(1, lastX, lastY);
     }
   }
-  
+
   // Recursive function to move all parts of the body
   private Boolean moveNext (int i, int x, int y) {
     if (hitFront(x, y) && i < body.size() - 1) {
@@ -123,43 +124,82 @@ class Snake {
       SnakePoint s = body.get(i);
       int lastX = s.getX();
       int lastY = s.getY();
-      
+
       s.setX(x);
       s.setY(y);
-      
+
       body.set(i, s);
       return moveNext(i+1, lastX, lastY);
     } else {
       return true;
     }
   }
-  
+
   // Check if the given x and y will hit a wall
   public Boolean hitWall (int x, int y) {
     return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
   }
-  
+
   // Check if the given x and y of the head will hit the body on movement
   // Excludes last snake point since it will move out of the way
   public Boolean hitBody (int x, int y) {
     SnakePoint p;
-    
+
     for (int i = 0; i < body.size() - 1; i++) {
       p = body.get(i);
       if (p.getX() == x && p.getY() == y) { return true; }
     }
-    
+
     return false;
   }
-  
+
   // Check if the x and y of a body piece interfere with the head of the snake
   // For use in movement checks
   public Boolean hitFront (int x, int y) {
     return x == body.get(0).getX() && y == body.get(0).getY();
   }
-  
+
   public Boolean eating (SnakePoint food) {
     SnakePoint head = getHead();
     return head.getX() == food.getX() && head.getY() == food.getY();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    // Return true if the passed object refers to the same spot in memory
+    if (o == this) { return true; }
+
+    // Return false if the passed object is not the correct type
+    if (!(o instanceof Snake)) { return false; }
+
+    // Cast and compare members
+    // Equal snakes if their bodies have same coordinates
+    Snake s = (Snake)o;
+    for (int i = 0; i < body.size(); i++) {
+      if (s.body.get(i).x != body.get(i).x ||
+          s.body.get(i).y != body.get(i).y) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // Copy the snake body points by value
+  public Vector<SnakePoint> copyBody() {
+    return new Vector<SnakePoint>(body);
+  }
+
+  public void setBody(Vector<SnakePoint> b) { body = b; }
+
+  // Copy this object and return it as a new space in memory
+  public Snake copy() {
+    Snake newSnake = new Snake();
+    newSnake.setDirection(direction);
+    newSnake.setColor(c);
+
+    newSnake.setBody(copyBody());
+
+    return newSnake;
   }
 }

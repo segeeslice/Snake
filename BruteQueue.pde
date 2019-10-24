@@ -1,47 +1,65 @@
+int BRUTE_ID_TRACKER = 1;
+
 class BruteQueueItem implements Comparable {
   // --- VARIABLES ---
   public int turnNumber;
   public int distToFood;
-  
-  public int x;
-  public int y;
-  
+
+  public Snake snakeState;
+
+  public char move;
+
+  int id;
+  int pid;
+
   // --- CONSTRUCTORS ---
   BruteQueueItem() {
     turnNumber = 0;
     distToFood = 0;
+
+    id = 0;
+    pid = -1;
   }
-  
-  BruteQueueItem(int t, int d, int x_in, int y_in) {
+
+  BruteQueueItem(int t, int d, Snake s, char m) {
     turnNumber = t;
     distToFood = d;
-    x = x_in;
-    y = y_in;
+    snakeState = s;
+    move = m;
+
+    id = 0;
+    pid = -1;
   }
-  
+
   // --- PUBLIC USE FUNCTIONS ---
   public int getPriority () {
     return turnNumber + distToFood;
   }
-  
+
+  public void assignId () {
+    id = BRUTE_ID_TRACKER;
+    BRUTE_ID_TRACKER++;
+  }
+
   // --- OBJECT OVERRIDES ---
   @Override
   public boolean equals(Object o) {
     // Return true if the passed object refers to the same spot in memory
     if (o == this) { return true; }
-    
+
     // Return false if the passed object is not the correct type
     if (!(o instanceof BruteQueueItem)) { return false; }
-    
+
     // Cast and compare members
     BruteQueueItem b = (BruteQueueItem)o;
-    return b.x == x && b.y == y && b.turnNumber == turnNumber && b.distToFood == distToFood;
+    return b.snakeState == snakeState && b.turnNumber == turnNumber && b.distToFood == distToFood;
   }
-  
-  int compareTo(Object o) {
+
+  @Override
+  public int compareTo(Object o) {
     // Return 0 if it's the same object
     if (o == this) { return 0; }
-    
+
     // Return 0 if passed object is incorrect type
     if (!(o instanceof BruteQueueItem)) { return 0; }
 
@@ -49,39 +67,74 @@ class BruteQueueItem implements Comparable {
     BruteQueueItem b = (BruteQueueItem)o;
     return this.getPriority() - b.getPriority();
   }
+
+
+  // Return true if this item less than passed item
+  public Boolean lessThan(BruteQueueItem b) {
+    return this.getPriority() < b.getPriority();
+  }
+
+  // Return true if this item is greater than passed item
+  public Boolean greaterThan(BruteQueueItem b) {
+    return this.getPriority() > b.getPriority();
+  }
 }
 
 // Priority queue weighted by turn number and the distance to the food together
 class BruteQueue {
   // --- VARIABLES ---
   Vector<BruteQueueItem> queue;
-  
+
   // --- FUNCTIONS ---
   BruteQueue() {
     queue = new Vector<BruteQueueItem>();
   }
-  
+
   // Add an item to the queue in its appropriate position
-  public void addItem(int t, int d, int x_in, int y_in) {
-    int index = 0;
-    BruteQueueItem item = new BruteQueueItem(t, d, x_in, y_in);
-    
-    // Exit early if this exact item is already in the queue
-    if (queue.contains(item)) { return; }  
-    
-    // Otherwise, add the new item and sort the vector automatically
-    queue.add(item);
-    Collections.sort(queue);
+  // turn number, distance to food, snake, move
+  public void addItem(int t, int d, Snake s, char m) {
+    BruteQueueItem item = new BruteQueueItem(t, d, s, m);
+    addItem(item);
   }
-  
+
+  public void addItem (BruteQueueItem item) {
+    // Exit early if this exact item is already in the queue
+    // TODO: Check if valid
+    if (queue.contains(item)) { return; }
+
+    // Otherwise, find a new location for the item and add
+    Boolean added = false;
+    for (int i = 0; i < queue.size(); i++) {
+      if (item.lessThan(queue.get(i))) {
+        queue.add(i, item);
+        added = true;
+        break;
+      }
+    }
+
+    if (!added) { queue.add(item); }
+  }
+
+  // Dequeue the front of the list and return it
+  public BruteQueueItem dequeue() {
+    BruteQueueItem ret = queue.get(0);
+    queue.remove(0);
+    return ret;
+  }
+
+  // Return true if no items in queue
+  public Boolean isEmpty() {
+    return queue.isEmpty();
+  }
+
   // Print all items (for test purposes)
   public void printAll() {
     BruteQueueItem temp;
     for (int i = 0; i < queue.size(); i++) {
       temp = queue.get(i);
-      println(temp.turnNumber, temp.distToFood, temp.x, temp.y);
+      println(temp.turnNumber, temp.distToFood);
     }
-    
+
     println();
   }
 }
