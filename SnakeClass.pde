@@ -29,6 +29,11 @@ class SnakePoint {
   // Sends top left coordinate, assuming mode CORNER
   int getXCoord () { return x*20 + PADDING; }
   int getYCoord () { return y*20 + PADDING + SCORE_HEIGHT; }
+
+  // Copy this snake point by value
+  public SnakePoint copy() {
+    return new SnakePoint(x, y, c);
+  }
 }
 
 class Snake {
@@ -64,16 +69,9 @@ class Snake {
     for (int i = 0; i < n; i++) { addPoint(); }
   }
 
-  private Boolean opposite (char x, char y) {
-    return (x == 'U' && y == 'D') ||
-           (x == 'D' && y == 'U') ||
-           (x == 'R' && y == 'L') ||
-           (x == 'L' && y == 'R');
-  }
-
   // Only move in direction if it is not a direct conflict with the past direction
   Boolean moveAuto () {
-    if (!opposite(direction, directionLast)) {
+    if (!isOpposite(direction, directionLast)) {
       return move(direction);
     } else {
       return move(directionLast);
@@ -81,30 +79,21 @@ class Snake {
   }
 
   // Return true or false based on if move is okay
-  Boolean move (char mode) {
+  // Other interfaces should not use this! Acts as direction gatekeeper
+  Boolean move (char dir) {
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
 
-    directionLast = mode;
+    // Set last direction for auto movement matching
+    directionLast = dir;
 
-    // Move front item
-    switch (mode) {
-      case 'U':
-        s.setY(lastY - 1);
-        break;
-      case 'D':
-        s.setY(lastY + 1);
-        break;
-      case 'R':
-        s.setX(lastX + 1);
-        break;
-      case 'L':
-        s.setX(lastX - 1);
-        break;
-      default:
-        println("Oopsy whoopsy");
-    }
+    // Set current direction in case it wasn't set previously
+    direction = dir;
+
+    int nextCoords[] = getNextCoords(lastX, lastY, dir);
+    s.setX(nextCoords[0]);
+    s.setY(nextCoords[1]);
 
     if (hitWall(s.getX(), s.getY())) {
       return false;
@@ -133,11 +122,6 @@ class Snake {
     } else {
       return true;
     }
-  }
-
-  // Check if the given x and y will hit a wall
-  public Boolean hitWall (int x, int y) {
-    return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
   }
 
   // Check if the given x and y of the head will hit the body on movement
@@ -187,7 +171,13 @@ class Snake {
 
   // Copy the snake body points by value
   public Vector<SnakePoint> copyBody() {
-    return new Vector<SnakePoint>(body);
+    Vector<SnakePoint> copied = new Vector<SnakePoint>();
+
+    for (int i = 0; i < body.size(); i++) {
+      copied.add(body.get(i).copy());
+    }
+
+    return copied;
   }
 
   public void setBody(Vector<SnakePoint> b) { body = b; }

@@ -11,6 +11,7 @@ final color FOOD_COLOR = color(250, 50, 50);
 final int BOARD_SIZE = 25;
 final int SCORE_HEIGHT = 50;
 final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI", "Brute"};
+final char[] DIRECTIONS = {'U', 'D', 'L', 'R'};
 
 // Padding around each individual snake pixel
 final int PADDING = 2;
@@ -37,16 +38,16 @@ String speedText = "";
 SnakePoint randomFood () {
   int x = 0;
   int y = 0;
-  
+
   do {
     x = int(random(25));
     y = int(random(25));
   } while (snake.hitBody(x, y));
-  
+
   return new SnakePoint(x, y, FOOD_COLOR);
 }
 
-void newFood() { 
+void newFood() {
   food = randomFood();
 }
 
@@ -77,7 +78,7 @@ char rightDir (char d) {
     default:
       println("Oopsy whoopsy");
       return d;
-  } 
+  }
 }
 
 char leftDir (char d) {
@@ -93,5 +94,39 @@ char leftDir (char d) {
     default:
       println("Oopsy whoopsy");
       return d;
-  } 
+  }
 }
+
+Boolean isOpposite (char x, char y) {
+  return (x == 'U' && y == 'D') ||
+    (x == 'D' && y == 'U') ||
+    (x == 'R' && y == 'L') ||
+    (x == 'L' && y == 'R');
+}
+
+int[] getNextCoords (int x, int y, char dir) {
+    switch (dir) {
+      case 'U':
+        y -= 1;
+        break;
+      case 'D':
+        y += 1;
+        break;
+      case 'R':
+        x += 1;
+        break;
+      case 'L':
+        x -= 1;
+        break;
+      default:
+        println("Oopsy whoopsy");
+    }
+
+    return new int[] {x, y};
+}
+
+// Check if the given x and y will hit a wall
+public Boolean hitWall (int x, int y) {
+  return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
+}
+
