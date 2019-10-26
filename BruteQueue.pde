@@ -9,6 +9,8 @@ class BruteQueueItem implements Comparable {
 
   public char move;
 
+  public BruteQueueItem parent;
+
   int id;
   int pid;
 
@@ -19,6 +21,11 @@ class BruteQueueItem implements Comparable {
 
     id = 0;
     pid = -1;
+  }
+
+  BruteQueueItem(Snake s) {
+    this();
+    snakeState = s;
   }
 
   BruteQueueItem(int t, int d, Snake s, char m) {
@@ -33,7 +40,7 @@ class BruteQueueItem implements Comparable {
 
   // --- PUBLIC USE FUNCTIONS ---
   public int getPriority () {
-    return turnNumber + distToFood;
+    return distToFood;
   }
 
   public void assignId () {
@@ -51,8 +58,9 @@ class BruteQueueItem implements Comparable {
     if (!(o instanceof BruteQueueItem)) { return false; }
 
     // Cast and compare members
+    // Two queue items considered equal if same snake positions
     BruteQueueItem b = (BruteQueueItem)o;
-    return b.snakeState == snakeState && b.turnNumber == turnNumber && b.distToFood == distToFood;
+    return b.snakeState == snakeState;
   }
 
   @Override
@@ -113,6 +121,11 @@ class BruteQueue {
     }
 
     if (!added) { queue.add(item); }
+  }
+
+  // Check if queue contains an item
+  public Boolean contains(BruteQueueItem item) {
+    return queue.contains(item);
   }
 
   // Dequeue the front of the list and return it

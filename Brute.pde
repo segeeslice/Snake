@@ -24,42 +24,90 @@ class Brute {
   // Find the shortest path to the food; set `moves` accordingly
   // Assumes moves is empty for efficiency
   void generatePath() {
-    // Initialize variable for finding neighbors
+    // Debug stuff
+    // TODO: Remove
+    PrintWriter writer = createWriter("test.txt");
+
+    // Initialize variables for finding neighbors
     Vector<Snake> neighbors;
-    BruteQueueItem expanded;
+    BruteQueueItem expanded = null;
+
+    // Initialize variables for setting up neighbors
+    int turnNumber;
+    int distToFood;
+    SnakePoint head;
 
     // Generate open and visited lists
     BruteQueue open = new BruteQueue();
     HashSet<BruteQueueItem> visited = new HashSet<BruteQueueItem>();
 
-    // Add the current state to the visited
+    // Temp item for processing
+    BruteQueueItem temp = null;
+
+    // Add the current state to the open list
     open.addItem(0, 0, snake, PARENT_CHAR);
 
+    // Find path to food
     while (!open.isEmpty()) {
       // Expand the next item
       expanded = open.dequeue();
 
+      // Temp debug
+      // TODO: Remove
+      //writer.print("Turn #:       "); writer.println(expanded.turnNumber);
+      //writer.print("Dist to food: "); writer.println(expanded.distToFood);
+      //writer.print("Priority:     "); writer.println(expanded.getPriority());
+      //writer.print("\n");
+
       // Exit if we have the goal
-      // TODO: uncomment upon completion
-      //if (true || isGoal(expanded)) {
-        //break;
-      //}
+      if (isGoal(expanded)) {
+        break;
+      }
 
       // Find its neighbors
       neighbors = getNeighbors(expanded.snakeState);
 
-      // For now, just get a random val and go that way
-      moves.add(neighbors.get(random.nextInt(neighbors.size())).getDirection());
+      // Process the neighbors
+      for (Snake s : neighbors) {
+        temp = new BruteQueueItem(s);
 
-      // For now, exit in any case
-      break;
+        // Exit early if already visited
+        if (visited.contains(temp) || open.contains(temp)) { break; }
 
-      //for (int i = 0; i < neighbors.size(); i++) {
-        //if (!visited.contains(neighbors[i])) {
-          //// Set up neighbor item
-          //open.add(neighbors[i])
-        //}
-      //}
+        head = s.getHead();
+
+        // Apply queue item properties
+        temp.move = s.getDirection();
+        temp.parent = expanded;
+        temp.turnNumber = expanded.turnNumber + 1; // TODO: Could simplify?
+
+        // TODO: Put into own function
+        // TODO: Put into account snake interrupts?
+        temp.distToFood = Math.abs(head.getX() - food.getX()) +
+                          Math.abs(head.getY() - food.getY());
+
+        // TODO: Compare if item already in open list
+        open.addItem(temp);
+      }
+
+      // Mark the expanded item visited
+      visited.add(expanded);
+    }
+
+    // Process path to food (in reverse)
+    temp = expanded;
+    while (temp.move != PARENT_CHAR) {
+      moves.add(temp.move);
+      temp = temp.parent;
+    }
+
+    // Reverse the list to get proper order
+    Collections.reverse(moves);
+
+    // If no path to goal, just go straight
+    // TODO: Just go opposite direction and kill self
+    if (moves.isEmpty()) {
+      moves.add(snake.getDirection());
     }
   }
 
