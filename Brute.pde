@@ -83,8 +83,7 @@ class Brute {
 
         // TODO: Put into own function
         // TODO: Put into account snake interrupts?
-        temp.distToFood = Math.abs(head.getX() - food.getX()) +
-                          Math.abs(head.getY() - food.getY());
+        temp.distToFood = getDistance(head);
 
         // TODO: Compare if item already in open list
         open.addItem(temp);
@@ -114,6 +113,13 @@ class Brute {
   // Returns true if the given queue item is at the goal state (eating)
   Boolean isGoal(BruteQueueItem b) {
     return b.snakeState.eating(food);
+  }
+
+  // Return Manhattan distance to food from the given head
+  int getDistance(SnakePoint head) {
+    int rawDist = Math.abs(head.getX() - food.getX()) +
+                  Math.abs(head.getY() - food.getY());
+    return rawDist;
   }
 
   // Get neighboring states to the given snake
