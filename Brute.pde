@@ -74,16 +74,13 @@ class Brute {
         // Exit early if already visited
         if (visited.contains(temp) || open.contains(temp)) { break; }
 
-        head = s.getHead();
-
         // Apply queue item properties
         temp.move = s.getDirection();
         temp.parent = expanded;
         temp.turnNumber = expanded.turnNumber + 1; // TODO: Could simplify?
 
-        // TODO: Put into own function
         // TODO: Put into account snake interrupts?
-        temp.distToFood = getDistance(head);
+        temp.distToFood = getDistance(s);
 
         // TODO: Compare if item already in open list
         open.addItem(temp);
@@ -116,10 +113,58 @@ class Brute {
   }
 
   // Return Manhattan distance to food from the given head
-  int getDistance(SnakePoint head) {
-    int rawDist = Math.abs(head.getX() - food.getX()) +
-                  Math.abs(head.getY() - food.getY());
-    return rawDist;
+  int getDistance(Snake s) {
+    SnakePoint head = s.getHead();
+
+    int headX = head.getX();
+    int headY = head.getY();
+    int foodX = food.getX();
+    int foodY = food.getY();
+
+    int rawDist = Math.abs(headX - foodX) +
+                  Math.abs(headY - foodY);
+
+    int xInterrupts = 0;
+    int yInterrupts = 0;
+
+    // TODO: Check interrupt
+    if (foodX < headX) {
+      for (int x = headX; x > foodX; x--) {
+        if (s.isBodyAt(x, headY) &&
+            s.distFromTail(x, headY) >= headX - x) {
+          xInterrupts++;
+        }
+      }
+    } else {
+      for (int x = headX; x < foodX; x++) {
+        if (s.isBodyAt(x, headY) &&
+            s.distFromTail(x, headY) >= x - headX) {
+          xInterrupts++;
+        }
+      }
+    }
+
+    if (foodY < headY) {
+      for (int y = headY; y > foodY; y--) {
+        if (s.isBodyAt(headX, y) &&
+            s.distFromTail(headX, y) >= headY - y) {
+          yInterrupts++;
+        }
+      }
+    } else {
+      for (int y = headY; y < foodY; y++) {
+        if (s.isBodyAt(headX, y) &&
+            s.distFromTail(headX, y) >= y - headY) {
+          yInterrupts++;
+        }
+      }
+    }
+
+    int maxInterrupts = xInterrupts > yInterrupts ? xInterrupts : yInterrupts;
+
+    int result = maxInterrupts > 0 ? maxInterrupts + 1 : 0;
+
+    return rawDist + result;
   }
 
   // Get neighboring states to the given snake

@@ -159,6 +159,18 @@ class Snake {
     // Cast and compare members
     // Equal snakes if their bodies have same coordinates
     Snake s = (Snake)o;
+
+    // This could be useful in quicker neighbor checking?
+    //SnakePoint thisHead = getHead();
+    //SnakePoint otherHead = s.getHead();
+    //return thisHead.getX() == otherHead.getX() &&
+           //thisHead.getY() == otherHead.getY() &&
+           //getDirection() == s.getDirection();
+
+    if (getDirection() != s.getDirection()) {
+       return false;
+    }
+
     for (int i = 0; i < body.size(); i++) {
       if (s.body.get(i).x != body.get(i).x ||
           s.body.get(i).y != body.get(i).y) {
@@ -191,5 +203,30 @@ class Snake {
     newSnake.setBody(copyBody());
 
     return newSnake;
+  }
+
+  // Return true if there's a body point at some given x and y
+  public Boolean isBodyAt (int x, int y) {
+    for (SnakePoint s : body) {
+      if (s.getX() == x && s.getY() == y) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  public int distFromTail (int x, int y) {
+    SnakePoint s;
+
+    for (int i = body.size()-1; i >= 0; i--) {
+      s = body.get(i);
+
+      if (s.getX() == x && s.getY() == y) {
+        return body.size() - i - 1;
+      }
+    }
+
+    return 0;
   }
 }
