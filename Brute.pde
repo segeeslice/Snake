@@ -77,7 +77,7 @@ class Brute {
         // Apply queue item properties
         temp.move = s.getDirection();
         temp.parent = expanded;
-        temp.turnNumber = expanded.turnNumber + 1; // TODO: Could simplify?
+        temp.turnNumber = expanded.turnNumber + .5; // TODO: Could simplify?
 
         // TODO: Put into account snake interrupts?
         temp.distToFood = getDistance(s);

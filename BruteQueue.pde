@@ -2,7 +2,7 @@ int BRUTE_ID_TRACKER = 1;
 
 class BruteQueueItem implements Comparable {
   // --- VARIABLES ---
-  public int turnNumber;
+  public float turnNumber;
   public int distToFood;
 
   public Snake snakeState;
@@ -40,7 +40,7 @@ class BruteQueueItem implements Comparable {
 
   // --- PUBLIC USE FUNCTIONS ---
   public int getPriority () {
-    return distToFood;
+    return distToFood + (int)turnNumber;
   }
 
   public void assignId () {

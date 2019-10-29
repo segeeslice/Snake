@@ -41,6 +41,7 @@ class Snake {
   private char direction;
   private char directionLast;
   private color c;
+  private final int MAX_EQ_CHECK = 3;
 
   Snake () {
     body = new Vector<SnakePoint> ();
@@ -161,24 +162,26 @@ class Snake {
     Snake s = (Snake)o;
 
     // This could be useful in quicker neighbor checking?
-    SnakePoint thisHead = getHead();
-    SnakePoint otherHead = s.getHead();
-    return thisHead.getX() == otherHead.getX() &&
-           thisHead.getY() == otherHead.getY() &&
-           getDirection() == s.getDirection();
+    //SnakePoint thisHead = getHead();
+    //SnakePoint otherHead = s.getHead();
+    //return thisHead.getX() == otherHead.getX() &&
+           //thisHead.getY() == otherHead.getY() &&
+           //getDirection() == s.getDirection();
 
-    //if (getDirection() != s.getDirection()) {
-       //return false;
-    //}
+    if (getDirection() != s.getDirection()) {
+       return false;
+    }
 
-    //for (int i = 0; i < body.size(); i++) {
-      //if (s.body.get(i).x != body.get(i).x ||
-          //s.body.get(i).y != body.get(i).y) {
-        //return false;
-      //}
-    //}
+    int maxIndex = body.size() < MAX_EQ_CHECK ? body.size() : MAX_EQ_CHECK;
 
-    //return true;
+    for (int i = 0; i < maxIndex; i++) {
+      if (s.body.get(i).x != body.get(i).x ||
+          s.body.get(i).y != body.get(i).y) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   // Copy the snake body points by value
