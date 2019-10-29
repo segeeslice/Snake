@@ -161,24 +161,24 @@ class Snake {
     Snake s = (Snake)o;
 
     // This could be useful in quicker neighbor checking?
-    //SnakePoint thisHead = getHead();
-    //SnakePoint otherHead = s.getHead();
-    //return thisHead.getX() == otherHead.getX() &&
-           //thisHead.getY() == otherHead.getY() &&
-           //getDirection() == s.getDirection();
+    SnakePoint thisHead = getHead();
+    SnakePoint otherHead = s.getHead();
+    return thisHead.getX() == otherHead.getX() &&
+           thisHead.getY() == otherHead.getY() &&
+           getDirection() == s.getDirection();
 
-    if (getDirection() != s.getDirection()) {
-       return false;
-    }
+    //if (getDirection() != s.getDirection()) {
+       //return false;
+    //}
 
-    for (int i = 0; i < body.size(); i++) {
-      if (s.body.get(i).x != body.get(i).x ||
-          s.body.get(i).y != body.get(i).y) {
-        return false;
-      }
-    }
+    //for (int i = 0; i < body.size(); i++) {
+      //if (s.body.get(i).x != body.get(i).x ||
+          //s.body.get(i).y != body.get(i).y) {
+        //return false;
+      //}
+    //}
 
-    return true;
+    //return true;
   }
 
   // Copy the snake body points by value

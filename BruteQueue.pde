@@ -60,7 +60,7 @@ class BruteQueueItem implements Comparable {
     // Cast and compare members
     // Two queue items considered equal if same snake positions
     BruteQueueItem b = (BruteQueueItem)o;
-    return b.snakeState == snakeState;
+    return b.snakeState.equals(snakeState);
   }
 
   @Override
@@ -92,12 +92,10 @@ class BruteQueueItem implements Comparable {
 class BruteQueue {
   // --- VARIABLES ---
   Vector<BruteQueueItem> queue;
-  HashSet<BruteQueueItem> set;
 
   // --- FUNCTIONS ---
   BruteQueue() {
     queue = new Vector<BruteQueueItem>();
-    set = new HashSet<BruteQueueItem>();
   }
 
   // Add an item to the queue in its appropriate position
@@ -108,9 +106,8 @@ class BruteQueue {
   }
 
   public void addItem (BruteQueueItem item) {
-    // Exit early if this exact item is already in the queue
-    // TODO: Check if valid
-    if (set.contains(item)) { return; }
+    // Assume if item is added, we know it is not already in queue
+    // if (queue.contains(item)) { return; }
 
     // Otherwise, find a new location for the item and add
     Boolean added = false;
@@ -124,19 +121,18 @@ class BruteQueue {
 
     if (!added) { queue.add(item); }
 
-    set.add(item);
+    queue.add(item);
   }
 
   // Check if queue contains an item
   public Boolean contains(BruteQueueItem item) {
-    return set.contains(item);
+    return queue.contains(item);
   }
 
   // Dequeue the front of the list and return it
   public BruteQueueItem dequeue() {
     BruteQueueItem ret = queue.get(0);
     queue.remove(0);
-    set.remove(ret);
     return ret;
   }
 

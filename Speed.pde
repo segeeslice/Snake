@@ -5,7 +5,7 @@
 // final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI", "Brute"};
 
 // --- VARIABLES ---
-final Integer[] SPEED_VALS = {10, 9, 8, 6, 5, 12};
+final Integer[] SPEED_VALS = {10, 9, 8, 6, 5, 7};
 final HashMap<Integer, String> SPEED_MAP = initSpeedMap();
 
 Iterator speedIter = initSpeedIter();
@@ -32,10 +32,10 @@ void cycleSpeed () {
   if (!speedIter.hasNext()) { speedIter = initSpeedIter(); }
   speed = (Integer)speedIter.next();
   speedText = SPEED_MAP.get(speed);
-  
+
   highScore = highScoreMap.get(speedText);
 }
 
 String getSpeedText () {
-  return SPEED_MAP.get(speed); 
+  return SPEED_MAP.get(speed);
 }

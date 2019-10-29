@@ -39,7 +39,7 @@ class Brute {
 
     // Generate open and visited lists
     BruteQueue open = new BruteQueue();
-    HashSet<BruteQueueItem> visited = new HashSet<BruteQueueItem>();
+    Vector<BruteQueueItem> visited = new Vector<BruteQueueItem>();
 
     // Temp item for processing
     BruteQueueItem temp = null;
@@ -128,37 +128,37 @@ class Brute {
     int yInterrupts = 0;
 
     // TODO: Check interrupt
-    if (foodX < headX) {
-      for (int x = headX; x > foodX; x--) {
-        if (s.isBodyAt(x, headY) &&
-            s.distFromTail(x, headY) >= headX - x) {
-          xInterrupts++;
-        }
-      }
-    } else {
-      for (int x = headX; x < foodX; x++) {
-        if (s.isBodyAt(x, headY) &&
-            s.distFromTail(x, headY) >= x - headX) {
-          xInterrupts++;
-        }
-      }
-    }
+    //if (foodX < headX) {
+      //for (int x = headX; x > foodX; x--) {
+        //if (s.isBodyAt(x, headY) &&
+            //s.distFromTail(x, headY) >= headX - x) {
+          //xInterrupts++;
+        //}
+      //}
+    //} else {
+      //for (int x = headX; x < foodX; x++) {
+        //if (s.isBodyAt(x, headY) &&
+            //s.distFromTail(x, headY) >= x - headX) {
+          //xInterrupts++;
+        //}
+      //}
+    //}
 
-    if (foodY < headY) {
-      for (int y = headY; y > foodY; y--) {
-        if (s.isBodyAt(headX, y) &&
-            s.distFromTail(headX, y) >= headY - y) {
-          yInterrupts++;
-        }
-      }
-    } else {
-      for (int y = headY; y < foodY; y++) {
-        if (s.isBodyAt(headX, y) &&
-            s.distFromTail(headX, y) >= y - headY) {
-          yInterrupts++;
-        }
-      }
-    }
+    //if (foodY < headY) {
+      //for (int y = headY; y > foodY; y--) {
+        //if (s.isBodyAt(headX, y) &&
+            //s.distFromTail(headX, y) >= headY - y) {
+          //yInterrupts++;
+        //}
+      //}
+    //} else {
+      //for (int y = headY; y < foodY; y++) {
+        //if (s.isBodyAt(headX, y) &&
+            //s.distFromTail(headX, y) >= y - headY) {
+          //yInterrupts++;
+        //}
+      //}
+    //}
 
     int maxInterrupts = xInterrupts > yInterrupts ? xInterrupts : yInterrupts;
 
