@@ -40,31 +40,67 @@ class Snake {
   private Vector<SnakePoint> body;
   private char direction;
   private char directionLast;
-  private color c;
   private final int MAX_EQ_CHECK = 3;
+
+  private final color headColor = color(242, 215, 242);
+
+  private color colors[] = {
+    color(27, 142, 27),
+    color(27, 142, 100),
+    color(27, 142, 150),
+    color(27, 142, 100),
+    color(27, 142, 50),
+    color(27, 142, 27),
+    color(50, 142, 27),
+    color(100, 142, 27),
+    color(150, 142, 27),
+    color(100, 142, 27),
+    color(50, 142, 27)
+  };
 
   Snake () {
     body = new Vector<SnakePoint> ();
     direction = 'R';
     directionLast = 'R';
-    c = color(255);
 
     for (int i = START_LENGTH; i >= 0; i--) {
-      body.add(new SnakePoint(0, 0, c));
+      body.add(new SnakePoint(0, 0));
     }
+
+    colorize();
   }
 
   List<SnakePoint> getBody () { return body; }
-  color getColor () { return c; }
-  void setColor (color c_in) { c = c_in; }
   SnakePoint getHead () { return body.get(0); }
 
   void setDirection (char d) { direction = d; }
   char getDirection () { return direction; }
 
+  void colorize() {
+    // Exit to avoid error
+    if (body.size() <= 0) { return; }
+
+    // Set head color
+    body.get(0).setColor(headColor);
+
+    int cIndex = 0;
+
+    // Set body colors
+    for (int i = 1; i < body.size(); i++) {
+      body.get(i).setColor(colors[cIndex]);
+
+      cIndex += 1;
+      if (cIndex >= colors.length) { cIndex = 0; }
+    }
+  }
+
   void addPoint () {
     // Coordinate is arbitrary since next move allows it to be drawn anyway
-    body.add(new SnakePoint(-1, -1, c));
+    body.add(new SnakePoint(-1, -1));
+
+    // Colorize all items
+    // Could be made more efficient but eh
+    colorize();
   }
   void addPoints (int n) {
     for (int i = 0; i < n; i++) { addPoint(); }
@@ -201,8 +237,6 @@ class Snake {
   public Snake copy() {
     Snake newSnake = new Snake();
     newSnake.setDirection(direction);
-    newSnake.setColor(c);
-
     newSnake.setBody(copyBody());
 
     return newSnake;
