@@ -44,19 +44,7 @@ class Snake {
 
   private final color headColor = color(242, 215, 242);
 
-  private color colors[] = {
-    color(27, 142, 27),
-    color(27, 142, 100),
-    color(27, 142, 150),
-    color(27, 142, 100),
-    color(27, 142, 50),
-    color(27, 142, 27),
-    color(50, 142, 27),
-    color(100, 142, 27),
-    color(150, 142, 27),
-    color(100, 142, 27),
-    color(50, 142, 27)
-  };
+  private final Vector<Integer> colors = generateColors();
 
   Snake () {
     body = new Vector<SnakePoint> ();
@@ -76,6 +64,43 @@ class Snake {
   void setDirection (char d) { direction = d; }
   char getDirection () { return direction; }
 
+  // Generate a color gradient for the snake to use in its colorization
+  private Vector<Integer> generateColors() {
+    Vector<Integer> returnVect = new Vector<Integer>();
+
+    int baseR = 25;
+    int baseG = 142;
+    int baseB = 25;
+
+    int incVal = 25;
+
+    // Gradient towards red
+    for (int i = 0; i < 10; i++) {
+      returnVect.add(color(baseR, baseG, baseB));
+      baseR += incVal;
+    }
+
+    // Gradient from red
+    for (int i = 0; i < 10; i++) {
+      returnVect.add(color(baseR, baseG, baseB));
+      baseR -= incVal;
+    }
+
+    // Gradient towards blue
+    for (int i = 0; i < 10; i++) {
+      returnVect.add(color(baseR, baseG, baseB));
+      baseB += incVal;
+    }
+
+    // Gradient from blue
+    for (int i = 0; i < 10; i++) {
+      returnVect.add(color(baseR, baseG, baseB));
+      baseB -= incVal;
+    }
+
+    return returnVect;
+  }
+
   void colorize() {
     // Exit to avoid error
     if (body.size() <= 0) { return; }
@@ -87,10 +112,10 @@ class Snake {
 
     // Set body colors
     for (int i = 1; i < body.size(); i++) {
-      body.get(i).setColor(colors[cIndex]);
+      body.get(i).setColor(colors.get(cIndex));
 
       cIndex += 1;
-      if (cIndex >= colors.length) { cIndex = 0; }
+      if (cIndex >= colors.size()) { cIndex = 0; }
     }
   }
 
