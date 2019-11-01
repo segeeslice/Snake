@@ -24,10 +24,6 @@ class Brute {
   // Find the shortest path to the food; set `moves` accordingly
   // Assumes moves is empty for efficiency
   void generatePath() {
-    // Debug stuff
-    // TODO: Remove
-    PrintWriter writer = createWriter("test.txt");
-
     // Initialize variables for finding neighbors
     Vector<Snake> neighbors;
     BruteQueueItem expanded = null;
@@ -38,26 +34,19 @@ class Brute {
     SnakePoint head;
 
     // Generate open and visited lists
-    BruteQueue open = new BruteQueue();
+    MinHeap<BruteQueueItem> open = new MinHeap<BruteQueueItem>();
     Vector<BruteQueueItem> visited = new Vector<BruteQueueItem>();
 
     // Temp item for processing
     BruteQueueItem temp = null;
 
     // Add the current state to the open list
-    open.addItem(0, 0, snake, PARENT_CHAR);
+    open.insert(new BruteQueueItem(0, 0, snake, PARENT_CHAR));
 
     // Find path to food
     while (!open.isEmpty()) {
       // Expand the next item
-      expanded = open.dequeue();
-
-      // Temp debug
-      // TODO: Remove
-      //writer.print("Turn #:       "); writer.println(expanded.turnNumber);
-      //writer.print("Dist to food: "); writer.println(expanded.distToFood);
-      //writer.print("Priority:     "); writer.println(expanded.getPriority());
-      //writer.print("\n");
+      expanded = open.getNext();
 
       // Exit if we have the goal
       if (isGoal(expanded)) {
@@ -83,7 +72,7 @@ class Brute {
         temp.distToFood = getDistance(s);
 
         // TODO: Compare if item already in open list
-        open.addItem(temp);
+        open.insert(temp);
       }
 
       // Mark the expanded item visited
