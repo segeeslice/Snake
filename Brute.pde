@@ -61,12 +61,13 @@ class Brute {
         temp = new BruteQueueItem(s);
 
         // Exit early if already visited
+        // TODO: Remove open check and check if new item better
         if (visited.contains(temp) || open.contains(temp)) { break; }
 
         // Apply queue item properties
         temp.move = s.getDirection();
         temp.parent = expanded;
-        temp.turnNumber = expanded.turnNumber + .5; // TODO: Could simplify?
+        temp.turnNumber = expanded.turnNumber + 1;
 
         // TODO: Put into account snake interrupts?
         temp.distToFood = getDistance(s);
