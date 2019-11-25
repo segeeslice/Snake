@@ -38,20 +38,22 @@ class Brute {
 
     // Generate open and visited hash tables
     // Open has queue and hash table for quicker containment checks
-    SnakeHashTable openHashTable = new SnakeHashTable();
-    SnakeHashTable visited = new SnakeHashTable();
+    BruteHashTable openHashTable = new BruteHashTable();
+    BruteHashTable visited = new BruteHashTable();
 
     // Temp item for processing
     BruteQueueItem temp = null;
 
     // Add the current state to the open list
-    open.insert(new BruteQueueItem(0, 0, snake, PARENT_CHAR));
-    openHashTable.add(snake);
+    BruteQueueItem initial = new BruteQueueItem(0, 0, snake, PARENT_CHAR);
+    open.insert(initial);
+    openHashTable.add(initial);
 
     // Find path to food
     while (!open.isEmpty()) {
       // Expand the next item
       expanded = open.getNext();
+      openHashTable.remove(expanded);
 
       // Exit if we have the goal
       if (isGoal(expanded)) {
@@ -67,8 +69,8 @@ class Brute {
 
         // Exit early if already visited
         // TODO: Remove open check and check if new item better
-        if (visited.contains(temp.snakeState) ||
-            openHashTable.contains(temp.snakeState)) { continue; }
+        if (visited.contains(temp) ||
+            openHashTable.contains(temp)) { continue; }
 
         // Apply queue item properties
         temp.move = s.getDirection();
@@ -80,12 +82,11 @@ class Brute {
 
         // TODO: Compare if item already in open list
         open.insert(temp);
-        openHashTable.add(temp.snakeState);
+        openHashTable.add(temp);
       }
 
       // Mark the expanded item visited
-      visited.add(expanded.snakeState);
-      openHashTable.remove(expanded.snakeState);
+      visited.add(expanded);
     }
 
     // Process path to food (in reverse)
