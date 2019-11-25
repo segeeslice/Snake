@@ -174,9 +174,14 @@ class Snake {
 
   // Recursive function to move all parts of the body
   private Boolean moveNext (int i, int x, int y) {
-    if (hitFront(x, y) && i < body.size() - 1) {
+    if (i >= body.size()) {
+      updateHash();
+      return true;
+
+    } else if (hitFront(x, y)) {
       return false;
-    } else if (i < body.size()) {
+
+    } else {
       SnakePoint s = body.get(i);
       int lastX = s.getX();
       int lastY = s.getY();
@@ -186,9 +191,6 @@ class Snake {
 
       body.set(i, s);
       return moveNext(i+1, lastX, lastY);
-    } else {
-      updateHash();
-      return true;
     }
   }
 

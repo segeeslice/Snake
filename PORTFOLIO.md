@@ -23,3 +23,5 @@ Efficiency issues present. Things attempted to mitigate:
 Other ideas for a better AI output
 
 - Define goal state as a place where food is eaten AND tail is reachable
+- Better heuristic with boundary number detection
+
