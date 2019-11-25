@@ -5,23 +5,22 @@
 // final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI", "Brute"};
 
 // --- VARIABLES ---
-final Integer[] SPEED_VALS = {10, 9, 8, 6, 5, 7};
-final HashMap<Integer, String> SPEED_MAP = initSpeedMap();
+final HashMap<String, Integer> SPEED_MAP = initSpeedMap();
 
 Iterator speedIter = initSpeedIter();
 
 // --- INTERNAL FUNCTIONS ---
 HashMap initSpeedMap () {
-  HashMap<Integer, String> map = new HashMap<Integer, String>();
+  HashMap<String, Integer> map = new HashMap<String, Integer>();
   for (int i = 0; i < SPEED_TEXT.length; i++) {
-    map.put(SPEED_VALS[i], SPEED_TEXT[i]);
+    map.put(SPEED_TEXT[i], SPEED_VALS[i]);
   }
   return map;
 }
 
 // Initialize an iterator to cycle through SPEED_VALS array
 Iterator initSpeedIter() {
-  return Arrays.asList(SPEED_VALS).iterator();
+  return Arrays.asList(SPEED_TEXT).iterator();
 }
 
 // --- COMMON USE FUNCTIONS ---
@@ -30,12 +29,8 @@ void cycleSpeed () {
   highScoreMap.replace(speedText, highScore);
 
   if (!speedIter.hasNext()) { speedIter = initSpeedIter(); }
-  speed = (Integer)speedIter.next();
-  speedText = SPEED_MAP.get(speed);
+  speedText = (String)speedIter.next();
+  speed = SPEED_MAP.get(speedText);
 
   highScore = highScoreMap.get(speedText);
-}
-
-String getSpeedText () {
-  return SPEED_MAP.get(speed);
 }

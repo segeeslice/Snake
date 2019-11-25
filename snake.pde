@@ -144,9 +144,9 @@ void moveSnake () {
   // Only move at certain intervals, but keep framerate high
   // to lessen input latency
   if (frameCount % speed == 0) {
-    if (getSpeedText() == "Neural") {
+    if (speedText == "Neural") {
       playing = NAI.processInput();
-    } else if (getSpeedText() == "Brute") {
+    } else if (speedText == "Brute") {
       playing = BAI.processInput();
     } else {
       playing = snake.moveAuto();
