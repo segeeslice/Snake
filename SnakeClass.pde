@@ -41,7 +41,7 @@ class Snake {
   private char direction;
   private char directionLast;
   private int hash;
-  private final int MAX_EQ_CHECK = 4;
+  private final int MAX_EQ_CHECK = 6;
   private final int HASH_PRIME = 49157;
 
   private final color headColor = color(242, 215, 242);
@@ -257,17 +257,7 @@ class Snake {
     // Equal snakes if their bodies have same coordinates
     Snake s = (Snake)o;
 
-    // This could be useful in quicker neighbor checking?
-    //SnakePoint thisHead = getHead();
-    //SnakePoint otherHead = s.getHead();
-    //return thisHead.getX() == otherHead.getX() &&
-           //thisHead.getY() == otherHead.getY() &&
-           //getDirection() == s.getDirection();
-
-    if (getDirection() != s.getDirection()) {
-       return false;
-    }
-
+    // Return true if their hashes are the same
     return hash == s.getHash();
   }
 

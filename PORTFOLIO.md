@@ -19,3 +19,7 @@ Efficiency issues present. Things attempted to mitigate:
     - Initially thought it would improve since checking each snake body part is O(n), but checking a hash is O(1)
     - Did not realize that the hash would need to be updated on every move, keeping it O(n)
     - May still work
+
+Other ideas for a better AI output
+
+- Define goal state as a place where food is eaten AND tail is reachable

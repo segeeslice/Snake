@@ -33,15 +33,20 @@ class Brute {
     int distToFood;
     SnakePoint head;
 
-    // Generate open and visited lists
+    // Generate open queue
     MinHeap<BruteQueueItem> open = new MinHeap<BruteQueueItem>();
-    Vector<BruteQueueItem> visited = new Vector<BruteQueueItem>();
+
+    // Generate open and visited hash tables
+    // Open has queue and hash table for quicker containment checks
+    SnakeHashTable openHashTable = new SnakeHashTable();
+    SnakeHashTable visited = new SnakeHashTable();
 
     // Temp item for processing
     BruteQueueItem temp = null;
 
     // Add the current state to the open list
     open.insert(new BruteQueueItem(0, 0, snake, PARENT_CHAR));
+    openHashTable.add(snake);
 
     // Find path to food
     while (!open.isEmpty()) {
@@ -62,7 +67,8 @@ class Brute {
 
         // Exit early if already visited
         // TODO: Remove open check and check if new item better
-        if (visited.contains(temp) || open.contains(temp)) { continue; }
+        if (visited.contains(temp.snakeState) ||
+            openHashTable.contains(temp.snakeState)) { continue; }
 
         // Apply queue item properties
         temp.move = s.getDirection();
@@ -74,10 +80,12 @@ class Brute {
 
         // TODO: Compare if item already in open list
         open.insert(temp);
+        openHashTable.add(temp.snakeState);
       }
 
       // Mark the expanded item visited
-      visited.add(expanded);
+      visited.add(expanded.snakeState);
+      openHashTable.remove(expanded.snakeState);
     }
 
     // Process path to food (in reverse)
