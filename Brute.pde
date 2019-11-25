@@ -62,7 +62,7 @@ class Brute {
 
         // Exit early if already visited
         // TODO: Remove open check and check if new item better
-        if (visited.contains(temp) || open.contains(temp)) { break; }
+        if (visited.contains(temp) || open.contains(temp)) { continue; }
 
         // Apply queue item properties
         temp.move = s.getDirection();

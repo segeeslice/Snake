@@ -40,7 +40,7 @@ class Snake {
   private Vector<SnakePoint> body;
   private char direction;
   private char directionLast;
-  private final int MAX_EQ_CHECK = 3;
+  private final int MAX_EQ_CHECK = 4;
 
   private final color headColor = color(242, 215, 242);
 
