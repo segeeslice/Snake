@@ -42,6 +42,16 @@ class MinHeap <T extends Comparable<T>> {
     return heap.contains(item);
   }
 
+  public T get(T item) {
+    for (T t: heap) {
+      if (t.equals(item)) {
+        return t;
+      }
+    }
+
+    return null;
+  }
+
   // Print all items in heap (for potential debugging purposes)
   public void printAll() {
     for (T item : heap) {
