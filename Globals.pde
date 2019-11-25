@@ -10,7 +10,7 @@ final int PLAY_BUTTON_DIAM = 100;
 final color FOOD_COLOR = color(250, 50, 50);
 final int BOARD_SIZE = 25;
 final int SCORE_HEIGHT = 50;
-final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "AI", "Brute"};
+final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "Neural", "Brute"};
 final char[] DIRECTIONS = {'U', 'D', 'L', 'R'};
 
 // Padding around each individual snake pixel
