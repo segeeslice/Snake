@@ -14,10 +14,9 @@ class MinHeap <T extends Comparable<T>> {
   }
 
   // Get the next (minimum) value
-  public T getNext() {
+  public T getNext () {
     // Ensure heap has value in it
     if (heap.size() == 0) { return null; }
-
 
     // Get min val
     T retVal = heap.get(0);
@@ -32,6 +31,27 @@ class MinHeap <T extends Comparable<T>> {
     return retVal;
   }
 
+  // Remove any value
+  public void remove (T val) {
+    int index = -1;
+
+    for (int i = 0; i < heap.size(); i++) {
+      if (heap.get(i).equals(val)) {
+        index = i;
+        break;
+      }
+    }
+
+    if (index > 0) {
+      // Swap two values and remove the designated val
+      swap(index, heap.size()-1);
+      heap.remove(heap.size()-1);
+
+      // Reheap from the found index
+      reheapDown(index);
+    }
+  }
+
   // Check if heap is empty
   public Boolean isEmpty() {
     return (heap.size() <= 0);
@@ -40,16 +60,6 @@ class MinHeap <T extends Comparable<T>> {
   // Check if heap contains some item
   public Boolean contains(T item) {
     return heap.contains(item);
-  }
-
-  public T get(T item) {
-    for (T t: heap) {
-      if (t.equals(item)) {
-        return t;
-      }
-    }
-
-    return null;
   }
 
   // Print all items in heap (for potential debugging purposes)
@@ -111,12 +121,17 @@ class MinHeap <T extends Comparable<T>> {
     }
   }
 
-  // Set the first item into the correct position
+  // Move the first item into its appropriate position
   private void reheapFirst() {
-    // Ensure heap has items in it
-    if (heap.size() == 0) { return; }
+    reheapDown(0);
+  }
 
-    int thisIndex = 0;
+  // Move the item at the given index to its appropriate position
+  private void reheapDown (int startIndex) {
+    // Ensure heap has enough items in it
+    if (heap.size() <= startIndex) { return; }
+
+    int thisIndex = startIndex;
     int leftIndex = getLeftChildIndex(thisIndex);
     int rightIndex = getRightChildIndex(thisIndex);
 

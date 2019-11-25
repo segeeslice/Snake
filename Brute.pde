@@ -41,8 +41,9 @@ class Brute {
     BruteHashTable openHashTable = new BruteHashTable();
     BruteHashTable visited = new BruteHashTable();
 
-    // Temp item for processing
+    // Temp items for processing
     BruteQueueItem temp = null;
+    BruteQueueItem presentItem = null;
 
     // Add the current state to the open list
     BruteQueueItem initial = new BruteQueueItem(0, 0, snake, PARENT_CHAR);
@@ -67,10 +68,21 @@ class Brute {
       for (Snake s : neighbors) {
         temp = new BruteQueueItem(s);
 
-        // Exit early if already visited
-        // TODO: Remove open check and check if new item better
-        if (visited.contains(temp) ||
-            openHashTable.contains(temp)) { continue; }
+        // Continue early if already visited
+        if (visited.contains(temp)) { continue; }
+
+        // Check if open list already contains this item
+        // If better one is found, continue. Otherwise, remove from open trackers
+        if (openHashTable.contains(temp)) {
+          presentItem = openHashTable.get(temp);
+
+          if (presentItem.getPriority() <= temp.getPriority()) {
+            continue;
+          } else {
+            openHashTable.remove(temp);
+            open.remove(temp);
+          }
+        }
 
         // Apply queue item properties
         temp.move = s.getDirection();
@@ -80,7 +92,6 @@ class Brute {
         // TODO: Put into account snake interrupts?
         temp.distToFood = getDistance(s);
 
-        // TODO: Compare if item already in open list
         open.insert(temp);
         openHashTable.add(temp);
       }
