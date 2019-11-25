@@ -40,7 +40,9 @@ class Snake {
   private Vector<SnakePoint> body;
   private char direction;
   private char directionLast;
+  private int hash;
   private final int MAX_EQ_CHECK = 4;
+  private final int HASH_PRIME = 49157;
 
   private final color headColor = color(242, 215, 242);
 
@@ -56,6 +58,7 @@ class Snake {
     }
 
     colorize();
+    updateHash();
   }
 
   List<SnakePoint> getBody () { return body; }
@@ -63,6 +66,8 @@ class Snake {
 
   void setDirection (char d) { direction = d; }
   char getDirection () { return direction; }
+
+  int getHash () { return hash; }
 
   // Generate a color gradient for the snake to use in its colorization
   private Vector<Integer> generateColors() {
@@ -182,7 +187,37 @@ class Snake {
       body.set(i, s);
       return moveNext(i+1, lastX, lastY);
     } else {
+      updateHash();
       return true;
+    }
+  }
+
+  // Get a hash based on two points
+  private int twoPointHash (int x, int y) {
+    // Use Integer class to hash
+    Integer xInt = new Integer(x);
+    Integer yInt = new Integer(y);
+
+    return((xInt.hashCode() + HASH_PRIME) * HASH_PRIME + yInt.hashCode());
+  }
+
+  // Update the hash value based on the current body positions
+  private void updateHash () {
+    hash = 0;
+
+    // Define looping variables
+    int xVal;
+    int yVal;
+
+    int maxIndex = body.size() < MAX_EQ_CHECK ? body.size() : MAX_EQ_CHECK;
+
+    for (int i = 0; i < maxIndex; i++) {
+        // Use Integer class to hash
+        xVal = body.get(i).getX();
+        yVal = body.get(i).getY();
+
+        // Update the hash value
+        hash = hash * HASH_PRIME + twoPointHash(xVal, yVal);
     }
   }
 
@@ -233,16 +268,7 @@ class Snake {
        return false;
     }
 
-    int maxIndex = body.size() < MAX_EQ_CHECK ? body.size() : MAX_EQ_CHECK;
-
-    for (int i = 0; i < maxIndex; i++) {
-      if (s.body.get(i).x != body.get(i).x ||
-          s.body.get(i).y != body.get(i).y) {
-        return false;
-      }
-    }
-
-    return true;
+    return hash == s.getHash();
   }
 
   // Copy the snake body points by value
