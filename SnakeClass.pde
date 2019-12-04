@@ -41,7 +41,7 @@ class Snake {
   private char direction;
   private char directionLast;
   private int hash;
-  private final int MAX_EQ_CHECK = 6;
+  private final int MAX_EQ_CHECK = 4;
   private final int HASH_PRIME = 49157;
 
   private final color headColor = color(242, 215, 242);
@@ -63,6 +63,7 @@ class Snake {
 
   List<SnakePoint> getBody () { return body; }
   SnakePoint getHead () { return body.get(0); }
+  SnakePoint getTail () { return body.lastElement(); }
 
   void setDirection (char d) { direction = d; }
   char getDirection () { return direction; }

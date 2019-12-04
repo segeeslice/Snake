@@ -12,7 +12,7 @@ class Brute {
 
   Boolean processInput () {
     if (moves.isEmpty()) {
-      generatePath();
+      generatePath(food.getX(), food.getY(), snake, false);
     }
 
     Character dir = moves.get(0);
@@ -23,7 +23,9 @@ class Brute {
 
   // Find the shortest path to the food; set `moves` accordingly
   // Assumes moves is empty for efficiency
-  void generatePath() {
+  // startSnake specifies which snake position it should start from
+  // rawMode specifies if it is just looking for the point; does not modify moves
+  Boolean generatePath (int x, int y, Snake startSnake, Boolean rawMode) {
     // Initialize variables for finding neighbors
     Vector<Snake> neighbors;
     BruteQueueItem expanded = null;
@@ -32,6 +34,9 @@ class Brute {
     int turnNumber;
     int distToFood;
     SnakePoint head;
+
+    // Initialize success checker
+    Boolean success = false;
 
     // Generate open queue
     MinHeap<BruteQueueItem> open = new MinHeap<BruteQueueItem>();
@@ -46,7 +51,7 @@ class Brute {
     BruteQueueItem presentItem = null;
 
     // Add the current state to the open list
-    BruteQueueItem initial = new BruteQueueItem(0, 0, snake, PARENT_CHAR);
+    BruteQueueItem initial = new BruteQueueItem(0, 0, startSnake, PARENT_CHAR);
     open.insert(initial);
     openHashTable.add(initial);
 
@@ -54,10 +59,18 @@ class Brute {
     while (!open.isEmpty()) {
       // Expand the next item
       expanded = open.getNext();
+      SnakePoint eHead = expanded.snakeState.getHead();
       openHashTable.remove(expanded);
 
-      // Exit if we have the goal
-      if (isGoal(expanded)) {
+      // Exit and return in raw mode if we have the goal
+      if (rawMode && eHead.getX() == x && eHead.getY() == y) {
+        return true;
+      }
+
+      // Break out of loop if in normal mode and have the goal
+      // TODO: if we found path to food, remember it and take it upon failure
+      if (!rawMode && isGoal(expanded)) {
+        success = true;
         break;
       }
 
@@ -100,6 +113,17 @@ class Brute {
       visited.add(expanded);
     }
 
+    // If we reach here in raw mode, it's a failure; return
+    if (rawMode) {
+      return false;
+    }
+
+    // If we do not have a success in normal mode, set up to kill self
+    if (!success) {
+      moves.add(getOpposite(snake.getDirection()));
+      return false;
+    }
+
     // Process path to food (in reverse)
     temp = expanded;
     while (temp.move != PARENT_CHAR) {
@@ -110,16 +134,23 @@ class Brute {
     // Reverse the list to get proper order
     Collections.reverse(moves);
 
-    // If no path to goal, just go straight
-    // TODO: Just go opposite direction and kill self
-    if (moves.isEmpty()) {
-      moves.add(snake.getDirection());
-    }
+    // If we reached here, we're in normal mode and successful. Return true
+    return true;
   }
 
-  // Returns true if the given queue item is at the goal state (eating)
+  // Returns true if the given queue item is eating and has path to tail
   Boolean isGoal(BruteQueueItem b) {
-    return b.snakeState.eating(food);
+    Snake bSnake = b.snakeState;
+    SnakePoint bTail = bSnake.getTail();
+
+    Boolean eatingFood = b.snakeState.eating(food);
+
+    if (!eatingFood) {
+      return false;
+    }
+
+    Boolean pathToTail = generatePath(bTail.getX(), bTail.getY(), bSnake, true);
+    return pathToTail;
   }
 
   // Return Manhattan distance to food from the given head

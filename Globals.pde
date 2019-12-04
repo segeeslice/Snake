@@ -105,6 +105,16 @@ Boolean isOpposite (char x, char y) {
     (x == 'L' && y == 'R');
 }
 
+char getOpposite (char c) {
+  for (char dir : DIRECTIONS) {
+    if (isOpposite(c, dir)) {
+      return dir;
+    }
+  }
+
+  return '\0';
+}
+
 int[] getNextCoords (int x, int y, char dir) {
     switch (dir) {
       case 'U':
