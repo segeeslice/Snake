@@ -11,7 +11,7 @@ final color FOOD_COLOR = color(250, 50, 50);
 final int BOARD_SIZE = 25;
 final int SCORE_HEIGHT = 50;
 final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "Neural", "Brute"};
-final Integer[] SPEED_VALS = {10, 9, 8, 6, 5, 5};
+final Integer[] SPEED_VALS = {10, 9, 8, 6, 1, 1};
 final char[] DIRECTIONS = {'U', 'D', 'L', 'R'};
 
 // Padding around each individual snake pixel
@@ -130,4 +130,3 @@ int[] getNextCoords (int x, int y, char dir) {
 public Boolean hitWall (int x, int y) {
   return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
 }
-

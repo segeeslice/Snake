@@ -1,5 +1,8 @@
 import java.util.*;
 
+int TIME = 0;
+int iter = 0;
+
 void setup () {
   // Prelim
   size(500, 550);
@@ -58,6 +61,8 @@ void mousePressed () {
     snake = new Snake();
     newFood();
     score = 0;
+    TIME = 0;
+    iter = 0;
     playing = true;
   }
 
@@ -146,8 +151,10 @@ void moveSnake () {
   if (frameCount % speed == 0) {
     if (speedText == "Neural") {
       playing = NAI.processInput();
+      TIME++;
     } else if (speedText == "Brute") {
       playing = BAI.processInput();
+      TIME++;
     } else {
       playing = snake.moveAuto();
     }
@@ -157,6 +164,21 @@ void moveSnake () {
       snake.addPoints(3);
       score++;
       if (score > highScore) { highScore = score; }
+    }
+    
+    if (playing == false) {
+       println("Score:", score);
+       println("Time:", TIME);
+       println("");
+       
+       if (iter < 20) {
+       snake = new Snake();
+       newFood();
+       score = 0;
+       TIME = 0;
+       playing = true;
+       iter++;
+       }
     }
   }
 }
