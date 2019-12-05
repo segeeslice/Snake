@@ -30,6 +30,7 @@ Neural NAI = new Neural();
 Brute BAI = new Brute();
 SnakePoint food = randomFood();
 Boolean playing = false;
+Boolean snakeDied = false;
 Integer score = 0;
 Integer highScore = 0;
 HashMap<String, Integer> highScoreMap = initHighScoreMap();

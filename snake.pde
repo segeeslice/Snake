@@ -26,6 +26,11 @@ void draw () {
     moveSnake();
     speedTextDisplay(255);
 
+  } else if (snakeDied) {
+    drawSnake();
+    drawFood();
+    speedTextDisplay(255);
+
   } else {
     playButton();
     speedButton();
@@ -157,6 +162,10 @@ void moveSnake () {
       snake.addPoints(GROW_AMT);
       score++;
       if (score > highScore) { highScore = score; }
+    }
+
+    if (!playing) {
+      snakeDied = true;
     }
   }
 }

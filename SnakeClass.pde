@@ -44,6 +44,7 @@ class Snake {
   private int stackedPoints;
   private final int MAX_EQ_CHECK = 3;
   private final int HASH_PRIME = 49157;
+  private Vector<SnakePoint> lastBody;
 
   private final color headColor = color(242, 215, 242);
 
@@ -159,6 +160,7 @@ class Snake {
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
+    lastBody = this.copyBody();
 
     // Set last direction for auto movement matching
     directionLast = dir;
@@ -171,7 +173,12 @@ class Snake {
     s.setY(nextCoords[1]);
 
     if (hitWall(s.getX(), s.getY())) {
+      // Reset to display where we hit
+      body = lastBody;
+      body.get(0).setColor(color(0));
+
       return false;
+
     } else {
       body.set(0, s);
 
@@ -181,6 +188,7 @@ class Snake {
   }
 
   // Recursive function to move all parts of the body
+  // Moves all parts even if there is a collision for failure
   private Boolean moveNext (int i, int x, int y) {
     if (i >= body.size()) {
       updateHash();
@@ -189,6 +197,8 @@ class Snake {
       return true;
 
     } else if (hitFront(x, y)) {
+      body = lastBody;
+      body.get(i-1).setColor(color(0));
       return false;
 
     } else {
