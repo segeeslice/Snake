@@ -154,7 +154,7 @@ void moveSnake () {
 
     if (snake.eating(food)) {
       newFood();
-      snake.addPoints(3);
+      snake.addPoints(GROW_AMT);
       score++;
       if (score > highScore) { highScore = score; }
     }

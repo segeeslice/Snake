@@ -63,7 +63,7 @@ class Brute {
       openHashTable.remove(expanded);
 
       // Exit and return in raw mode if we have the goal
-      if (rawMode && eHead.getX() == x && eHead.getY() == y) {
+      if (rawMode && eHead.getX() == x && eHead.getY() == y && expanded.turnNumber > GROW_AMT) {
         return true;
       }
 
@@ -149,7 +149,10 @@ class Brute {
       return false;
     }
 
-    Boolean pathToTail = generatePath(bTail.getX(), bTail.getY(), bSnake, true);
+    Snake grownSnake = bSnake.copy();
+    grownSnake.addPoints(GROW_AMT);
+
+    Boolean pathToTail = generatePath(bTail.getX(), bTail.getY(), grownSnake, true);
     return pathToTail;
   }
 

@@ -21,6 +21,8 @@ final int SEG_SIZE = 20-(2*PADDING);
 
 // Beginning length of the snake
 final int START_LENGTH = 5;
+// Amount the snake grows upon eating food
+final int GROW_AMT = 3;
 
 // --- VARIABLES ---
 Snake snake = new Snake ();
