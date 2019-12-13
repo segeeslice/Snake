@@ -169,7 +169,7 @@ class Brute {
   // Returns true if the given queue item is eating
   // Tail mode bool indicates if we should account for growth
   Boolean isGoal(BruteQueueItem b, Boolean tailMode) {
-    return b.snakeState.eating(food) && (!tailMode || b.turnNumber > GROW_AMT);
+    return b.snakeState.eating(food) && (!tailMode || b.turnNumber > b.snakeState.getStackedPoints());
   }
 
   // Returns true if a path to the tail exists

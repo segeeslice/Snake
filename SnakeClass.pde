@@ -41,6 +41,7 @@ class Snake {
   private char direction;
   private char directionLast;
   private int hash;
+  private int stackedPoints;
   private final int MAX_EQ_CHECK = 3;
   private final int HASH_PRIME = 49157;
 
@@ -52,10 +53,13 @@ class Snake {
     body = new Vector<SnakePoint> ();
     direction = 'R';
     directionLast = 'R';
+    stackedPoints = 0;
 
-    for (int i = START_LENGTH; i >= 0; i--) {
-      body.add(new SnakePoint(0, 0));
-    }
+    // Init head
+    body.add(new SnakePoint(0,0));
+
+    // Init body
+    addPoints(START_LENGTH - 1);
 
     colorize();
     updateHash();
@@ -69,6 +73,8 @@ class Snake {
   char getDirection () { return direction; }
 
   int getHash () { return hash; }
+
+  int getStackedPoints () { return stackedPoints; }
 
   // Generate a color gradient for the snake to use in its colorization
   private Vector<Integer> generateColors() {
@@ -128,6 +134,7 @@ class Snake {
   void addPoint () {
     // Coordinate is arbitrary since next move allows it to be drawn anyway
     body.add(new SnakePoint(-1, -1));
+    stackedPoints++;
 
     // Colorize all items
     // Could be made more efficient but eh
@@ -177,6 +184,8 @@ class Snake {
   private Boolean moveNext (int i, int x, int y) {
     if (i >= body.size()) {
       updateHash();
+      stackedPoints = stackedPoints <= 0 ? 0 : stackedPoints - 1;
+
       return true;
 
     } else if (hitFront(x, y)) {
