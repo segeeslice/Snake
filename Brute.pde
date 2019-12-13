@@ -12,7 +12,7 @@ class Brute {
 
   Boolean processInput () {
     if (moves.isEmpty()) {
-      generatePath(food.getX(), food.getY(), snake, false);
+      generatePath();
     }
 
     Character dir = moves.get(0);
@@ -21,11 +21,25 @@ class Brute {
     return snake.move(dir);
   }
 
+  // Wrappers/default values for the more specific generatePath method
+  Boolean generatePath () {
+    return generatePath (food.getX(), food.getY(), snake, false, false);
+  }
+  Boolean generatePath (int x, int y) {
+    return generatePath (x, y, snake, false, false);
+  }
+  Boolean generatePath (int x, int y, Snake startSnake) {
+    return generatePath (x, y, startSnake, false, false);
+  }
+  Boolean generatePath (int x, int y, Snake startSnake, Boolean rawMode) {
+    return generatePath (x, y, startSnake, rawMode, false);
+  }
+
   // Find the shortest path to the food; set `moves` accordingly
   // Assumes moves is empty for efficiency
   // startSnake specifies which snake position it should start from
   // rawMode specifies if it is just looking for the point; does not modify moves
-  Boolean generatePath (int x, int y, Snake startSnake, Boolean rawMode) {
+  Boolean generatePath (int x, int y, Snake startSnake, Boolean rawMode, Boolean tailMode) {
     // Initialize variables for finding neighbors
     Vector<Snake> neighbors;
     BruteQueueItem expanded = null;
@@ -63,7 +77,9 @@ class Brute {
       openHashTable.remove(expanded);
 
       // Exit and return in raw mode if we have the goal
-      if (rawMode && eHead.getX() == x && eHead.getY() == y && expanded.turnNumber > GROW_AMT) {
+      // Account for how far we've moved if in tail mode
+      if (rawMode && eHead.getX() == x && eHead.getY() == y &&
+          (!tailMode || expanded.turnNumber > GROW_AMT)) {
         return true;
       }
 
@@ -152,7 +168,7 @@ class Brute {
     Snake grownSnake = bSnake.copy();
     grownSnake.addPoints(GROW_AMT);
 
-    Boolean pathToTail = generatePath(bTail.getX(), bTail.getY(), grownSnake, true);
+    Boolean pathToTail = generatePath(bTail.getX(), bTail.getY(), grownSnake, true, true);
     return pathToTail;
   }
 
