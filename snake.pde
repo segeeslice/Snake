@@ -23,16 +23,19 @@ void draw () {
   if (playing) {
     drawSnake();
     drawFood();
-    moveSnake();
     speedTextDisplay(255);
+    moveSnake();
 
   } else if (snakeDied) {
     drawSnake();
     drawFood();
-    speedTextDisplay(255);
+    playButton();
+    viewBoardButton();
+    speedButton();
 
   } else {
     playButton();
+    viewBoardButton(); // TODO: remove
     speedButton();
   }
 }
@@ -82,14 +85,28 @@ void playButton () {
   }
 
   stroke(50);
-  ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
+  //ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
+  rect(BOARD_CENTER_X-PLAY_BUTTON_WIDTH/2,
+       BOARD_CENTER_Y-PLAY_BUTTON_HEIGHT/2,
+       PLAY_BUTTON_WIDTH,
+       PLAY_BUTTON_HEIGHT);
 
   fill(0);
   textSize(40);
   textAlign(CENTER, CENTER);
-  text("Play", 249, 245+SCORE_HEIGHT);
+  text("Play", BOARD_CENTER_X-1, BOARD_CENTER_Y-5);
 
   stroke(255); // Reset stroke after
+}
+
+void viewBoardButton () {
+  fill(200);
+
+  stroke(50);
+  rect(BOARD_CENTER_X-PLAY_BUTTON_WIDTH/2,
+       BOARD_CENTER_Y-PLAY_BUTTON_HEIGHT/2 + PLAY_BUTTON_HEIGHT + 5,
+       PLAY_BUTTON_WIDTH,
+       VIEW_BOARD_BUTTON_HEIGHT);
 }
 
 void scoreboard () {
@@ -172,6 +189,7 @@ void moveSnake () {
 
 // ---- UTIL FUNCTIONS ----
 
+// TODO: Modify and add view board button
 Boolean mouseOverPlay () {
   float disX = 250 - mouseX;
   float disY = 250 + SCORE_HEIGHT - mouseY;
