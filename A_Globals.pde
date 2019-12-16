@@ -1,9 +1,14 @@
-// Stored here for the sake of keeping publicly used functions and variables in one location
-// Would run through static class, but is a bit tricky in Processing
-
-// Total grid is 500 x 500
-// Grid is 25 x 25 with boxes of size 20
-// Defined more in SnakeClass
+/*
+ * Globals are stored in this class to keep in one location
+ * Would run through static class, but is a bit tricky in Processing
+ *
+ * File name appended with A_ because Processing files are included in alphabetical order
+ * As such, globals here should have no dependencies on other custom classes
+ *
+ * Total grid is 500 x 500
+ * Grid is 25 x 25 with boxes of size 20
+ * Defined more in SnakeClass
+ */
 
 // --- CONSTANTS ---
 final int PLAY_BUTTON_DIAM = 70;
