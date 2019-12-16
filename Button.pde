@@ -111,7 +111,7 @@ class RectButton extends Button {
     fill(0);
     textSize(this.textSize);
     textAlign(CENTER, CENTER);
-    text(this.text, getCenterX(), getCenterY());
+    text(this.text, getCenterX(), getCenterY()-2);
 
     // Reset stroke
     stroke(255); // TODO: Investigate removal
