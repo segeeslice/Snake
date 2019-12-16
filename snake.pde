@@ -30,12 +30,12 @@ void draw () {
     drawSnake();
     drawFood();
     playButton.draw();
-    viewBoardButton();
+    viewBoardButton.draw();
     speedButton.draw();
 
   } else {
     playButton.draw();
-    viewBoardButton(); // TODO: remove
+    viewBoardButton.draw(); // TODO: remove
     speedButton.draw();
   }
 }
@@ -76,16 +76,6 @@ void mousePressed () {
 }
 
 // ---- UI ELEMENTS ----
-
-void viewBoardButton () {
-  fill(200);
-
-  stroke(50);
-  rect(BOARD_CENTER_X-PLAY_BUTTON_WIDTH/2,
-       BOARD_CENTER_Y-PLAY_BUTTON_HEIGHT/2 + PLAY_BUTTON_HEIGHT + 5,
-       PLAY_BUTTON_WIDTH,
-       VIEW_BOARD_BUTTON_HEIGHT);
-}
 
 void scoreboard () {
   // Box

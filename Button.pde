@@ -62,7 +62,6 @@ class RectButton extends Button {
   protected int x1, y1; // Top left rectangle x and y coordinates
   protected int w, h; // Width and height of the rectangle
 
-
   public RectButton(int x_in, int y_in, int w_in, int h_in) {
     super();
 
@@ -118,6 +117,7 @@ class RectButton extends Button {
   }
 }
 
+// NOTE: Since play button refactor, may not need this.
+//       However, may be wanted in the future. Keeping here as reminder
 //class CircleButton extends Button {
-
 //}

@@ -4,18 +4,23 @@
 // Basic positional things can be changed here
 // Further changes must be made within constructors
 
-// Play button
-final int PLAY_WIDTH = 100;
-final int PLAY_HEIGHT = 70;
-final int PLAY_X = BOARD_CENTER_X - (PLAY_WIDTH / 2);
-final int PLAY_Y = BOARD_CENTER_Y - (PLAY_HEIGHT / 2);
-
 // Speed button
 final int SPEED_X = 8;
 final int SPEED_Y = 8;
 final int SPEED_WIDTH = 100;
 final int SPEED_HEIGHT = SCORE_HEIGHT - (SPEED_Y * 2);
 
+// Play button
+final int PLAY_WIDTH = 100;
+final int PLAY_HEIGHT = 70;
+final int PLAY_X = BOARD_CENTER_X - (PLAY_WIDTH / 2);
+final int PLAY_Y = BOARD_CENTER_Y - (PLAY_HEIGHT / 2);
+
+// View board button
+final int VIEW_BOARD_WIDTH = PLAY_WIDTH;
+final int VIEW_BOARD_HEIGHT = 30;
+final int VIEW_BOARD_X = PLAY_X;
+final int VIEW_BOARD_Y = PLAY_Y + PLAY_HEIGHT + 5;
 
 // === PRESET CLASSES ===
 // NOTE: Done in this way because remaining operations cannot be done in flat file anyway.
@@ -50,7 +55,22 @@ class PlayButton extends RectButton {
   }
 }
 
+class ViewBoardButton extends RectButton {
+  public ViewBoardButton () {
+    super(VIEW_BOARD_X, VIEW_BOARD_Y, VIEW_BOARD_WIDTH, VIEW_BOARD_HEIGHT);
+
+    colorNeutral = color(200);
+    colorPressed = color(255);
+    strokeAmount = 50;
+
+    text = "View Board";
+    textColor = color(0);
+    textSize = 17;
+  }
+}
+
 // === PRESET GLOBALS ===
 
 Button speedButton = new SpeedButton();
 Button playButton = new PlayButton();
+Button viewBoardButton = new ViewBoardButton();
