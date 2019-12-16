@@ -29,12 +29,12 @@ void draw () {
   } else if (snakeDied) {
     drawSnake();
     drawFood();
-    playButton();
+    playButton.draw();
     viewBoardButton();
     speedButton.draw();
 
   } else {
-    playButton();
+    playButton.draw();
     viewBoardButton(); // TODO: remove
     speedButton.draw();
   }
@@ -62,7 +62,7 @@ void keyPressed () {
 
 void mousePressed () {
   // If play button is pressed
-  if (!playing && mouseOverPlay()) {
+  if (!playing && playButton.mouseIsOver()) {
     snake = new Snake();
     newFood();
     score = 0;
@@ -76,28 +76,6 @@ void mousePressed () {
 }
 
 // ---- UI ELEMENTS ----
-
-void playButton () {
-  if (!mouseOverPlay()) {
-    fill(200);
-  } else {
-    fill(255);
-  }
-
-  stroke(50);
-  //ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
-  rect(BOARD_CENTER_X-PLAY_BUTTON_WIDTH/2,
-       BOARD_CENTER_Y-PLAY_BUTTON_HEIGHT/2,
-       PLAY_BUTTON_WIDTH,
-       PLAY_BUTTON_HEIGHT);
-
-  fill(0);
-  textSize(40);
-  textAlign(CENTER, CENTER);
-  text("Play", BOARD_CENTER_X-1, BOARD_CENTER_Y-5);
-
-  stroke(255); // Reset stroke after
-}
 
 void viewBoardButton () {
   fill(200);
