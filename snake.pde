@@ -23,7 +23,7 @@ void draw () {
   if (playing) {
     drawSnake();
     drawFood();
-    speedTextDisplay(255);
+    speedButton.draw();
     moveSnake();
 
   } else if (snakeDied) {
@@ -31,12 +31,12 @@ void draw () {
     drawFood();
     playButton();
     viewBoardButton();
-    speedButton();
+    speedButton.draw();
 
   } else {
     playButton();
     viewBoardButton(); // TODO: remove
-    speedButton();
+    speedButton.draw();
   }
 }
 
@@ -69,7 +69,7 @@ void mousePressed () {
     playing = true;
   }
 
-  if (!playing && mouseOverSpeed()) {
+  if (!playing && speedButton.mouseIsOver()) {
     cycleSpeed();
     score = 0;
   }
@@ -127,27 +127,6 @@ void scoreboard () {
   text("Best: " + highScore.toString(), 250, SCORE_HEIGHT/2);
 
   strokeWeight(2); // Reset to original
-}
-
-void speedButton () {
-  if (!mouseOverSpeed()) {
-    fill(200);
-  } else {
-    fill(255);
-  }
-
-  stroke(50);
-  rect(10,10,100,SCORE_HEIGHT/2+10);
-  speedTextDisplay(0);
-
-  stroke(255); // Reset stroke after
-}
-
-void speedTextDisplay(int c) {
-  fill(c);
-  textSize(23);
-  textAlign(CENTER,CENTER);
-  text(speedText, 60, SCORE_HEIGHT/2);
 }
 
 void drawSnake () {
