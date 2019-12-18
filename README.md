@@ -1,4 +1,4 @@
-# Snake v1.3.0
+# Snake v1.3.1
 
 A simple project primarily initiated to learn the [Processing framework](https://processing.org/). Works as a functional replica of the classic snake arcade game. This has also been used as as a tool to learn and practice basic AI principles. To demo the AI's yourself, cycle to "Brute" or "Neural" difficulties using the top left button within the program. The "Brute" mode is a search-based AI, and the "Neural" mode is a neural network.
 
