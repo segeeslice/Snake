@@ -21,17 +21,37 @@ class Brute {
     return snake.move(dir);
   }
 
+  // Wrappers/default values for the more specific generatePath method
+  Boolean generatePath () {
+    return generatePath (food.getX(), food.getY(), snake, false, false);
+  }
+  Boolean generatePath (int x, int y) {
+    return generatePath (x, y, snake, false, false);
+  }
+  Boolean generatePath (int x, int y, Snake startSnake) {
+    return generatePath (x, y, startSnake, false, false);
+  }
+  Boolean generatePath (int x, int y, Snake startSnake, Boolean rawMode) {
+    return generatePath (x, y, startSnake, rawMode, false);
+  }
+
   // Find the shortest path to the food; set `moves` accordingly
   // Assumes moves is empty for efficiency
-  void generatePath() {
+  // startSnake specifies which snake position it should start from
+  // rawMode specifies if it is just looking for the point; does not modify moves
+  Boolean generatePath (int x, int y, Snake startSnake, Boolean rawMode, Boolean tailMode) {
     // Initialize variables for finding neighbors
     Vector<Snake> neighbors;
     BruteQueueItem expanded = null;
+    BruteQueueItem successBackup = null;
 
     // Initialize variables for setting up neighbors
     int turnNumber;
     int distToFood;
     SnakePoint head;
+
+    // Initialize success checker
+    Boolean success = false;
 
     // Generate open queue
     MinHeap<BruteQueueItem> open = new MinHeap<BruteQueueItem>();
@@ -46,7 +66,7 @@ class Brute {
     BruteQueueItem presentItem = null;
 
     // Add the current state to the open list
-    BruteQueueItem initial = new BruteQueueItem(0, 0, snake, PARENT_CHAR);
+    BruteQueueItem initial = new BruteQueueItem(0, 0, startSnake, PARENT_CHAR);
     open.insert(initial);
     openHashTable.add(initial);
 
@@ -54,11 +74,25 @@ class Brute {
     while (!open.isEmpty()) {
       // Expand the next item
       expanded = open.getNext();
+      SnakePoint eHead = expanded.snakeState.getHead();
       openHashTable.remove(expanded);
 
-      // Exit if we have the goal
-      if (isGoal(expanded)) {
-        break;
+      // Exit and return in raw mode if we have the goal
+      // Account for how far we've moved if in tail mode
+      if (rawMode && isGoal(expanded, tailMode)) {
+        return true;
+      }
+
+      // If in normal mode and we found the goal...
+      if (!rawMode && isGoal(expanded, false)) {
+        // Remember first successful path in case no paths to tail are found
+        if (successBackup == null) { successBackup = expanded; }
+
+        // Exit now if a path to the tail exists
+        if (hasPathToTail(expanded)) {
+          success = true;
+          break;
+        }
       }
 
       // Find its neighbors
@@ -100,8 +134,26 @@ class Brute {
       visited.add(expanded);
     }
 
+    // If we reach here in raw mode, it's a failure; return
+    if (rawMode) {
+      return false;
+    }
+
+    // If successful, set up to use the most recent item for path generation
+    if (success) {
+      temp = expanded;
+
+    // If we do not have success in normal mode, but have a backup, take it
+    } else if (successBackup != null) {
+      temp = successBackup;
+
+    // If no success paths at all, set up to kill self
+    } else {
+      moves.add(getOpposite(snake.getDirection()));
+      return false;
+    }
+
     // Process path to food (in reverse)
-    temp = expanded;
     while (temp.move != PARENT_CHAR) {
       moves.add(temp.move);
       temp = temp.parent;
@@ -110,16 +162,24 @@ class Brute {
     // Reverse the list to get proper order
     Collections.reverse(moves);
 
-    // If no path to goal, just go straight
-    // TODO: Just go opposite direction and kill self
-    if (moves.isEmpty()) {
-      moves.add(snake.getDirection());
-    }
+    // If we reached here, we're in normal mode and successful. Return true
+    return true;
   }
 
-  // Returns true if the given queue item is at the goal state (eating)
-  Boolean isGoal(BruteQueueItem b) {
-    return b.snakeState.eating(food);
+  // Returns true if the given queue item is eating
+  // Tail mode bool indicates if we should account for growth
+  Boolean isGoal(BruteQueueItem b, Boolean tailMode) {
+    return b.snakeState.eating(food) && (!tailMode || b.turnNumber > b.snakeState.getStackedPoints());
+  }
+
+  // Returns true if a path to the tail exists
+  // Assumes food would be eaten from this position, causing snake to grow
+  Boolean hasPathToTail(BruteQueueItem b) {
+    SnakePoint bTail = b.snakeState.getTail();
+    Snake grownSnake = b.snakeState.copy();
+    grownSnake.addPoints(GROW_AMT);
+
+    return generatePath(bTail.getX(), bTail.getY(), grownSnake, true, true);
   }
 
   // Return Manhattan distance to food from the given head

@@ -36,17 +36,32 @@ public void setup () {
 public void draw () {
   background(100);
   scoreboard();
+  speedButton.draw();
 
-  // --- GAME ---
-  if (playing) {
+  // --- VARIABLE UI ---
+
+  if (snakeDied || playing) {
     drawSnake();
     drawFood();
-    moveSnake();
-    speedTextDisplay(255);
+  }
 
-  } else {
-    playButton();
-    speedButton();
+  if (!playing) {
+    if (viewBoard) {
+      viewBoardExitButton.draw();
+
+    } else {
+      playButton.draw();
+
+      if (snakeDied) {
+        viewBoardButton.draw();
+      }
+    }
+  }
+
+  // --- GAME ---
+
+  if (playing) {
+    moveSnake();
   }
 }
 
@@ -72,38 +87,28 @@ public void keyPressed () {
 
 public void mousePressed () {
   // If play button is pressed
-  if (!playing && mouseOverPlay()) {
+  if (!playing && playButton.mouseIsOver()) {
     snake = new Snake();
     newFood();
     score = 0;
     playing = true;
   }
 
-  if (!playing && mouseOverSpeed()) {
+  if (!playing && speedButton.mouseIsOver()) {
     cycleSpeed();
     score = 0;
+  }
+
+  if (!playing && snakeDied) {
+    if (!viewBoard && viewBoardButton.mouseIsOver()) {
+      viewBoard = true;
+    } else if (viewBoard && viewBoardExitButton.mouseIsOver()) {
+      viewBoard = false;
+    }
   }
 }
 
 // ---- UI ELEMENTS ----
-
-public void playButton () {
-  if (!mouseOverPlay()) {
-    fill(200);
-  } else {
-    fill(255);
-  }
-
-  stroke(50);
-  ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
-
-  fill(0);
-  textSize(40);
-  textAlign(CENTER, CENTER);
-  text("Play", 249, 245+SCORE_HEIGHT);
-
-  stroke(255); // Reset stroke after
-}
 
 public void scoreboard () {
   // Box
@@ -123,27 +128,6 @@ public void scoreboard () {
   text("Best: " + highScore.toString(), 250, SCORE_HEIGHT/2);
 
   strokeWeight(2); // Reset to original
-}
-
-public void speedButton () {
-  if (!mouseOverSpeed()) {
-    fill(200);
-  } else {
-    fill(255);
-  }
-
-  stroke(50);
-  rect(10,10,100,SCORE_HEIGHT/2+10);
-  speedTextDisplay(0);
-
-  stroke(255); // Reset stroke after
-}
-
-public void speedTextDisplay(int c) {
-  fill(c);
-  textSize(23);
-  textAlign(CENTER,CENTER);
-  text(speedText, 60, SCORE_HEIGHT/2);
 }
 
 public void drawSnake () {
@@ -172,15 +156,20 @@ public void moveSnake () {
 
     if (snake.eating(food)) {
       newFood();
-      snake.addPoints(3);
+      snake.addPoints(GROW_AMT);
       score++;
       if (score > highScore) { highScore = score; }
+    }
+
+    if (!playing) {
+      snakeDied = true;
     }
   }
 }
 
 // ---- UTIL FUNCTIONS ----
 
+// TODO: Modify and add view board button
 public Boolean mouseOverPlay () {
   float disX = 250 - mouseX;
   float disY = 250 + SCORE_HEIGHT - mouseY;
@@ -201,6 +190,168 @@ public Boolean mouseOverSpeed() {
   int y2 = h + y1;
 
   return (mouseX > x1 && mouseX < x2 && mouseY > y1 && mouseY < y2);
+}
+/*
+ * Globals are stored in this class to keep in one location
+ * Would run through static class, but is a bit tricky in Processing
+ *
+ * File name appended with A_ because Processing files are included in alphabetical order
+ * As such, globals here should have no dependencies on other custom classes
+ *
+ * Total grid is 500 x 500
+ * Grid is 25 x 25 with boxes of size 20
+ * Defined more in SnakeClass
+ */
+
+// --- CONSTANTS ---
+final int BOARD_WIDTH = 500;  // Need to modify here and directly in snake.pde if desired
+final int BOARD_HEIGHT = 500;
+
+final int PLAY_BUTTON_DIAM = 70;
+final int PLAY_BUTTON_WIDTH = 100;
+final int PLAY_BUTTON_HEIGHT = 70;
+final int VIEW_BOARD_BUTTON_HEIGHT = 30;
+
+final int SCORE_HEIGHT = 50;
+
+final int BOARD_CENTER_X = BOARD_WIDTH / 2;
+final int BOARD_CENTER_Y = (BOARD_HEIGHT - SCORE_HEIGHT) / 2 + SCORE_HEIGHT;
+
+final int FOOD_COLOR = color(250, 50, 50);
+final int BOARD_SIZE = 25;
+final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "Neural", "Brute"};
+final Integer[] SPEED_VALS = {10, 9, 8, 6, 5, 5};
+final char[] DIRECTIONS = {'U', 'D', 'L', 'R'};
+
+// Padding around each individual snake pixel
+final int PADDING = 2;
+// Size of each snake segment
+final int SEG_SIZE = 20-(2*PADDING);
+
+// Beginning length of the snake
+final int START_LENGTH = 5;
+// Amount the snake grows upon eating food
+final int GROW_AMT = 3;
+
+// --- VARIABLES ---
+Snake snake = new Snake ();
+Neural NAI = new Neural();
+Brute BAI = new Brute();
+SnakePoint food = randomFood();
+Boolean playing = false;
+Boolean snakeDied = false;
+Boolean viewBoard = false;
+Integer score = 0;
+Integer highScore = 0;
+HashMap<String, Integer> highScoreMap = initHighScoreMap();
+
+Integer speed = -1;
+String speedText = "";
+
+// --- UTIL FUNCTIONS ---
+public SnakePoint randomFood () {
+  int x = 0;
+  int y = 0;
+
+  do {
+    x = PApplet.parseInt(random(25));
+    y = PApplet.parseInt(random(25));
+  } while (snake.hitBody(x, y));
+
+  return new SnakePoint(x, y, FOOD_COLOR);
+}
+
+public void newFood() {
+  food = randomFood();
+}
+
+public HashMap<String, Integer> initHighScoreMap () {
+  HashMap<String, Integer> map = new HashMap<String, Integer>();
+  for (String s: SPEED_TEXT) {
+    map.put(s, new Integer(0));
+  }
+  return map;
+}
+
+// Get a random elem from a passed list. If the list is of size 0, return the passed default.
+public Object randomElem (ArrayList<?> selection, Object def) {
+  int randIndex = (int)floor(random(selection.size()));
+  return selection.size() > 0 ? selection.get(randIndex) : def;
+}
+
+public char rightDir (char d) {
+  switch (d) {
+    case 'U':
+      return 'R';
+    case 'D':
+      return 'L';
+    case 'R':
+      return 'D';
+    case 'L':
+      return 'U';
+    default:
+      println("Oopsy whoopsy");
+      return d;
+  }
+}
+
+public char leftDir (char d) {
+  switch (d) {
+    case 'U':
+      return 'L';
+    case 'D':
+      return 'R';
+    case 'R':
+      return 'U';
+    case 'L':
+      return 'D';
+    default:
+      println("Oopsy whoopsy");
+      return d;
+  }
+}
+
+public Boolean isOpposite (char x, char y) {
+  return (x == 'U' && y == 'D') ||
+    (x == 'D' && y == 'U') ||
+    (x == 'R' && y == 'L') ||
+    (x == 'L' && y == 'R');
+}
+
+public char getOpposite (char c) {
+  for (char dir : DIRECTIONS) {
+    if (isOpposite(c, dir)) {
+      return dir;
+    }
+  }
+
+  return '\0';
+}
+
+public int[] getNextCoords (int x, int y, char dir) {
+    switch (dir) {
+      case 'U':
+        y -= 1;
+        break;
+      case 'D':
+        y += 1;
+        break;
+      case 'R':
+        x += 1;
+        break;
+      case 'L':
+        x -= 1;
+        break;
+      default:
+        println("Oopsy whoopsy");
+    }
+
+    return new int[] {x, y};
+}
+
+// Check if the given x and y will hit a wall
+public Boolean hitWall (int x, int y) {
+  return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
 }
 class Brute {
   static final char PARENT_CHAR = 'P';
@@ -225,17 +376,37 @@ class Brute {
     return snake.move(dir);
   }
 
+  // Wrappers/default values for the more specific generatePath method
+  public Boolean generatePath () {
+    return generatePath (food.getX(), food.getY(), snake, false, false);
+  }
+  public Boolean generatePath (int x, int y) {
+    return generatePath (x, y, snake, false, false);
+  }
+  public Boolean generatePath (int x, int y, Snake startSnake) {
+    return generatePath (x, y, startSnake, false, false);
+  }
+  public Boolean generatePath (int x, int y, Snake startSnake, Boolean rawMode) {
+    return generatePath (x, y, startSnake, rawMode, false);
+  }
+
   // Find the shortest path to the food; set `moves` accordingly
   // Assumes moves is empty for efficiency
-  public void generatePath() {
+  // startSnake specifies which snake position it should start from
+  // rawMode specifies if it is just looking for the point; does not modify moves
+  public Boolean generatePath (int x, int y, Snake startSnake, Boolean rawMode, Boolean tailMode) {
     // Initialize variables for finding neighbors
     Vector<Snake> neighbors;
     BruteQueueItem expanded = null;
+    BruteQueueItem successBackup = null;
 
     // Initialize variables for setting up neighbors
     int turnNumber;
     int distToFood;
     SnakePoint head;
+
+    // Initialize success checker
+    Boolean success = false;
 
     // Generate open queue
     MinHeap<BruteQueueItem> open = new MinHeap<BruteQueueItem>();
@@ -250,7 +421,7 @@ class Brute {
     BruteQueueItem presentItem = null;
 
     // Add the current state to the open list
-    BruteQueueItem initial = new BruteQueueItem(0, 0, snake, PARENT_CHAR);
+    BruteQueueItem initial = new BruteQueueItem(0, 0, startSnake, PARENT_CHAR);
     open.insert(initial);
     openHashTable.add(initial);
 
@@ -258,11 +429,25 @@ class Brute {
     while (!open.isEmpty()) {
       // Expand the next item
       expanded = open.getNext();
+      SnakePoint eHead = expanded.snakeState.getHead();
       openHashTable.remove(expanded);
 
-      // Exit if we have the goal
-      if (isGoal(expanded)) {
-        break;
+      // Exit and return in raw mode if we have the goal
+      // Account for how far we've moved if in tail mode
+      if (rawMode && isGoal(expanded, tailMode)) {
+        return true;
+      }
+
+      // If in normal mode and we found the goal...
+      if (!rawMode && isGoal(expanded, false)) {
+        // Remember first successful path in case no paths to tail are found
+        if (successBackup == null) { successBackup = expanded; }
+
+        // Exit now if a path to the tail exists
+        if (hasPathToTail(expanded)) {
+          success = true;
+          break;
+        }
       }
 
       // Find its neighbors
@@ -304,8 +489,26 @@ class Brute {
       visited.add(expanded);
     }
 
+    // If we reach here in raw mode, it's a failure; return
+    if (rawMode) {
+      return false;
+    }
+
+    // If successful, set up to use the most recent item for path generation
+    if (success) {
+      temp = expanded;
+
+    // If we do not have success in normal mode, but have a backup, take it
+    } else if (successBackup != null) {
+      temp = successBackup;
+
+    // If no success paths at all, set up to kill self
+    } else {
+      moves.add(getOpposite(snake.getDirection()));
+      return false;
+    }
+
     // Process path to food (in reverse)
-    temp = expanded;
     while (temp.move != PARENT_CHAR) {
       moves.add(temp.move);
       temp = temp.parent;
@@ -314,16 +517,24 @@ class Brute {
     // Reverse the list to get proper order
     Collections.reverse(moves);
 
-    // If no path to goal, just go straight
-    // TODO: Just go opposite direction and kill self
-    if (moves.isEmpty()) {
-      moves.add(snake.getDirection());
-    }
+    // If we reached here, we're in normal mode and successful. Return true
+    return true;
   }
 
-  // Returns true if the given queue item is at the goal state (eating)
-  public Boolean isGoal(BruteQueueItem b) {
-    return b.snakeState.eating(food);
+  // Returns true if the given queue item is eating
+  // Tail mode bool indicates if we should account for growth
+  public Boolean isGoal(BruteQueueItem b, Boolean tailMode) {
+    return b.snakeState.eating(food) && (!tailMode || b.turnNumber > b.snakeState.getStackedPoints());
+  }
+
+  // Returns true if a path to the tail exists
+  // Assumes food would be eaten from this position, causing snake to grow
+  public Boolean hasPathToTail(BruteQueueItem b) {
+    SnakePoint bTail = b.snakeState.getTail();
+    Snake grownSnake = b.snakeState.copy();
+    grownSnake.addPoints(GROW_AMT);
+
+    return generatePath(bTail.getX(), bTail.getY(), grownSnake, true, true);
   }
 
   // Return Manhattan distance to food from the given head
@@ -504,138 +715,226 @@ class BruteQueueItem implements Comparable<BruteQueueItem> {
     return this.getPriority() - item.getPriority();
   }
 }
-// Stored here for the sake of keeping publicly used functions and variables in one location
-// Would run through static class, but is a bit tricky in Processing
+// File to contain the base button class definition
 
-// Total grid is 500 x 500
-// Grid is 25 x 25 with boxes of size 20
-// Defined more in SnakeClass
+abstract class Button {
+  // === BASE COMPONENTS ===
 
-// --- CONSTANTS ---
-final int PLAY_BUTTON_DIAM = 100;
-final int FOOD_COLOR = color(250, 50, 50);
-final int BOARD_SIZE = 25;
-final int SCORE_HEIGHT = 50;
-final String[] SPEED_TEXT = {"Easy", "Medium", "Hard", "Sanic", "Neural", "Brute"};
-final Integer[] SPEED_VALS = {10, 9, 8, 6, 5, 5};
-final char[] DIRECTIONS = {'U', 'D', 'L', 'R'};
+  protected int colorPressed;
+  protected int colorNeutral;
+  protected int strokeAmount;
 
-// Padding around each individual snake pixel
-final int PADDING = 2;
-// Size of each snake segment
-final int SEG_SIZE = 20-(2*PADDING);
+  protected String text;
+  protected int textColor;
+  protected int textSize;
 
-// Beginning length of the snake
-final int START_LENGTH = 5;
+  public Button () {
+    colorPressed = color(0);
+    colorNeutral = color(0);
 
-// --- VARIABLES ---
-Snake snake = new Snake ();
-Neural NAI = new Neural();
-Brute BAI = new Brute();
-SnakePoint food = randomFood();
-Boolean playing = false;
-Integer score = 0;
-Integer highScore = 0;
-HashMap<String, Integer> highScoreMap = initHighScoreMap();
+    strokeAmount = 0;
 
-Integer speed = -1;
-String speedText = "";
-
-// --- UTIL FUNCTIONS ---
-public SnakePoint randomFood () {
-  int x = 0;
-  int y = 0;
-
-  do {
-    x = PApplet.parseInt(random(25));
-    y = PApplet.parseInt(random(25));
-  } while (snake.hitBody(x, y));
-
-  return new SnakePoint(x, y, FOOD_COLOR);
-}
-
-public void newFood() {
-  food = randomFood();
-}
-
-public HashMap<String, Integer> initHighScoreMap () {
-  HashMap<String, Integer> map = new HashMap<String, Integer>();
-  for (String s: SPEED_TEXT) {
-    map.put(s, new Integer(0));
+    text = "";
+    textSize = 0;
   }
-  return map;
-}
 
-// Get a random elem from a passed list. If the list is of size 0, return the passed default.
-public Object randomElem (ArrayList<?> selection, Object def) {
-  int randIndex = (int)floor(random(selection.size()));
-  return selection.size() > 0 ? selection.get(randIndex) : def;
-}
-
-public char rightDir (char d) {
-  switch (d) {
-    case 'U':
-      return 'R';
-    case 'D':
-      return 'L';
-    case 'R':
-      return 'D';
-    case 'L':
-      return 'U';
-    default:
-      println("Oopsy whoopsy");
-      return d;
+  public Button setColorPressed (int c) {
+    colorPressed = c;
+    return this;
   }
-}
-
-public char leftDir (char d) {
-  switch (d) {
-    case 'U':
-      return 'L';
-    case 'D':
-      return 'R';
-    case 'R':
-      return 'U';
-    case 'L':
-      return 'D';
-    default:
-      println("Oopsy whoopsy");
-      return d;
+  public Button setColorNeutral (int c) {
+    colorNeutral = c;
+    return this;
   }
+
+  public Button setStrokeAmount (int s) {
+    strokeAmount = s;
+    return this;
+  }
+
+  public Button setText (String t) {
+    text = t;
+    return this;
+  }
+  public Button setTextColor (int c) {
+    textColor = c;
+    return this;
+  }
+  public Button setTextSize (int ts) {
+    textSize = ts;
+    return this;
+  }
+
+
+  // === ABSTRACT COMPONENTS ===
+
+  // Indicate if mouse is over this button or not
+  public abstract Boolean mouseIsOver();
+
+  // Draw the button
+  public abstract void draw();
 }
 
-public Boolean isOpposite (char x, char y) {
-  return (x == 'U' && y == 'D') ||
-    (x == 'D' && y == 'U') ||
-    (x == 'R' && y == 'L') ||
-    (x == 'L' && y == 'R');
-}
+class RectButton extends Button {
+  protected int x1, y1; // Top left rectangle x and y coordinates
+  protected int w, h; // Width and height of the rectangle
 
-public int[] getNextCoords (int x, int y, char dir) {
-    switch (dir) {
-      case 'U':
-        y -= 1;
-        break;
-      case 'D':
-        y += 1;
-        break;
-      case 'R':
-        x += 1;
-        break;
-      case 'L':
-        x -= 1;
-        break;
-      default:
-        println("Oopsy whoopsy");
+  public RectButton(int x_in, int y_in, int w_in, int h_in) {
+    super();
+
+    x1 = x_in;
+    y1 = y_in;
+    w = w_in;
+    h = h_in;
+
+    strokeAmount = 50;
+  }
+
+  // Get bottom right corner x coord
+  private int getX2 () {
+    return x1 + w;
+  }
+
+  // Get bottom right corner y coord
+  private int getY2 () {
+    return y1 + h;
+  }
+
+  private int getCenterX () {
+    return x1 + w/2;
+  }
+
+  private int getCenterY () {
+    return y1 + h/2;
+  }
+
+  // === ABSTRACT IMPLEMENTATIONS ===
+
+  public final Boolean mouseIsOver () {
+    return (mouseX > x1 && mouseX < getX2() && mouseY > y1 && mouseY < getY2());
+  }
+
+  public final void draw () {
+    if (!mouseIsOver()) {
+      fill(colorNeutral);
+    } else {
+      fill(colorPressed);
     }
 
-    return new int[] {x, y};
+    stroke(strokeAmount);
+    rect(x1, y1, w, h);
+
+    fill(0);
+    textSize(this.textSize);
+    textAlign(CENTER, CENTER);
+    text(this.text, getCenterX(), getCenterY()-2);
+
+    // Reset stroke
+    stroke(255); // TODO: Investigate removal
+  }
 }
 
-// Check if the given x and y will hit a wall
-public Boolean hitWall (int x, int y) {
-  return x < 0 || x > (BOARD_SIZE-1) || y < 0 || y > (BOARD_SIZE-1);
+// NOTE: Since play button refactor, may not need this.
+//       However, may be wanted in the future. Keeping here as reminder
+//class CircleButton extends Button {
+//}
+// File to contain the button presets for ease of use
+
+// === CONST VARS ===
+// Basic positional things can be changed here
+// Further changes must be made within constructors
+
+// Speed button
+final int SPEED_X = 8;
+final int SPEED_Y = 8;
+final int SPEED_WIDTH = 100;
+final int SPEED_HEIGHT = SCORE_HEIGHT - (SPEED_Y * 2);
+
+// Play button
+final int PLAY_WIDTH = 100;
+final int PLAY_HEIGHT = 70;
+final int PLAY_X = BOARD_CENTER_X - (PLAY_WIDTH / 2);
+final int PLAY_Y = BOARD_CENTER_Y - (PLAY_HEIGHT / 2);
+
+// View board button
+final int VIEW_BOARD_WIDTH = PLAY_WIDTH;
+final int VIEW_BOARD_HEIGHT = 30;
+final int VIEW_BOARD_X = PLAY_X;
+final int VIEW_BOARD_Y = PLAY_Y + PLAY_HEIGHT + 5;
+
+// View board exit button
+final int VIEW_BOARD_EXIT_WIDTH = 25;
+final int VIEW_BOARD_EXIT_HEIGHT = 25;
+final int VIEW_BOARD_EXIT_X = BOARD_WIDTH - VIEW_BOARD_EXIT_WIDTH - 10;
+final int VIEW_BOARD_EXIT_Y = SCORE_HEIGHT + 10;
+
+// === PRESET CLASSES ===
+// NOTE: Done in this way because remaining operations cannot be done in flat file anyway.
+//       So it needs to be in its own method, or in a subclass.
+//       Subclass seems nicer, so :)
+
+class SpeedButton extends RectButton {
+  public SpeedButton () {
+    super(SPEED_X, SPEED_Y, SPEED_WIDTH, SPEED_HEIGHT);
+
+    colorNeutral = color(200);
+    colorPressed = color(255);
+    strokeAmount = 50;
+
+    text = speedText;
+    textColor = color(0);
+    textSize = 23;
+  }
 }
+
+class PlayButton extends RectButton {
+  public PlayButton () {
+    super(PLAY_X, PLAY_Y, PLAY_WIDTH, PLAY_HEIGHT);
+
+    colorNeutral = color(200);
+    colorPressed = color(255);
+    strokeAmount = 50;
+
+    text = "Play";
+    textColor = color(0);
+    textSize = 40;
+  }
+}
+
+class ViewBoardButton extends RectButton {
+  public ViewBoardButton () {
+    super(VIEW_BOARD_X, VIEW_BOARD_Y, VIEW_BOARD_WIDTH, VIEW_BOARD_HEIGHT);
+
+    colorNeutral = color(200);
+    colorPressed = color(255);
+    strokeAmount = 50;
+
+    text = "View Board";
+    textColor = color(0);
+    textSize = 17;
+  }
+}
+
+class ViewBoardExitButton extends RectButton {
+  public ViewBoardExitButton () {
+    super(VIEW_BOARD_EXIT_X, VIEW_BOARD_EXIT_Y, VIEW_BOARD_EXIT_WIDTH, VIEW_BOARD_EXIT_HEIGHT);
+
+    colorNeutral = color(200, 175);
+    colorPressed = color(255);
+    strokeAmount = 50;
+
+    text = "X";
+    textColor = color(0, 100);
+    textSize = 17;
+  }
+}
+
+// === PRESET GLOBALS ===
+
+Button speedButton = new SpeedButton();
+Button playButton = new PlayButton();
+Button viewBoardButton = new ViewBoardButton();
+Button viewBoardExitButton = new ViewBoardExitButton();
 // Generic min heap for efficient sorted queue usage
 
 class MinHeap <T extends Comparable<T>> {
@@ -1060,8 +1359,10 @@ class Snake {
   private char direction;
   private char directionLast;
   private int hash;
-  private final int MAX_EQ_CHECK = 6;
+  private int stackedPoints;
+  private final int MAX_EQ_CHECK = 3;
   private final int HASH_PRIME = 49157;
+  private Vector<SnakePoint> lastBody;
 
   private final int headColor = color(242, 215, 242);
 
@@ -1071,10 +1372,13 @@ class Snake {
     body = new Vector<SnakePoint> ();
     direction = 'R';
     directionLast = 'R';
+    stackedPoints = 0;
 
-    for (int i = START_LENGTH; i >= 0; i--) {
-      body.add(new SnakePoint(0, 0));
-    }
+    // Init head
+    body.add(new SnakePoint(0,0));
+
+    // Init body
+    addPoints(START_LENGTH - 1);
 
     colorize();
     updateHash();
@@ -1082,11 +1386,14 @@ class Snake {
 
   public List<SnakePoint> getBody () { return body; }
   public SnakePoint getHead () { return body.get(0); }
+  public SnakePoint getTail () { return body.lastElement(); }
 
   public void setDirection (char d) { direction = d; }
   public char getDirection () { return direction; }
 
   public int getHash () { return hash; }
+
+  public int getStackedPoints () { return stackedPoints; }
 
   // Generate a color gradient for the snake to use in its colorization
   private Vector<Integer> generateColors() {
@@ -1146,6 +1453,7 @@ class Snake {
   public void addPoint () {
     // Coordinate is arbitrary since next move allows it to be drawn anyway
     body.add(new SnakePoint(-1, -1));
+    stackedPoints++;
 
     // Colorize all items
     // Could be made more efficient but eh
@@ -1170,6 +1478,7 @@ class Snake {
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
+    lastBody = this.copyBody();
 
     // Set last direction for auto movement matching
     directionLast = dir;
@@ -1182,7 +1491,12 @@ class Snake {
     s.setY(nextCoords[1]);
 
     if (hitWall(s.getX(), s.getY())) {
+      // Reset to display where we hit
+      body = lastBody;
+      body.get(0).setColor(color(0));
+
       return false;
+
     } else {
       body.set(0, s);
 
@@ -1192,12 +1506,17 @@ class Snake {
   }
 
   // Recursive function to move all parts of the body
+  // Moves all parts even if there is a collision for failure
   private Boolean moveNext (int i, int x, int y) {
     if (i >= body.size()) {
       updateHash();
+      stackedPoints = stackedPoints <= 0 ? 0 : stackedPoints - 1;
+
       return true;
 
     } else if (hitFront(x, y)) {
+      body = lastBody;
+      body.get(i-1).setColor(color(0));
       return false;
 
     } else {
@@ -1364,6 +1683,8 @@ public void cycleSpeed () {
   speed = SPEED_MAP.get(speedText);
 
   highScore = highScoreMap.get(speedText);
+
+  speedButton.setText(speedText);
 }
   public void settings() {  size(500, 550); }
   static public void main(String[] passedArgs) {

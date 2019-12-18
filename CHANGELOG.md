@@ -1,3 +1,23 @@
+# v1.3.1
+### New Features
+- Show the death state of the snake upon losing
+    - When running into a wall, **head** turns black to indicate where it was upon death
+    - When running into body part, the **body part** turns black to indicate failure direction
+- Added a "view board" button upon the snake dying
+    - Appears directly under play button
+    - Clicking allows the user to see the board as it was upon death
+    - This view can be exited via an "X" button in the top right
+
+### Other Changes
+- Improved Brute AI
+    - Search for a path to the tail upon finding the food
+    - Ensures it will have a way to escape from wherever the food is
+    - If paths to food are found, but none have a path to the tail, a "backup" path is used
+- Brute AI now simply kills itself instantly if no path is found
+    - Indicated by point right behind head turning black (snake forceably turns completely around)
+
+<br/>
+
 # v1.3.0
 ### New Features
 - Added "Brute" mode!
