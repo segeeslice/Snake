@@ -41,8 +41,10 @@ class Snake {
   private char direction;
   private char directionLast;
   private int hash;
-  private final int MAX_EQ_CHECK = 6;
+  private int stackedPoints;
+  private final int MAX_EQ_CHECK = 3;
   private final int HASH_PRIME = 49157;
+  private Vector<SnakePoint> lastBody;
 
   private final color headColor = color(242, 215, 242);
 
@@ -52,10 +54,13 @@ class Snake {
     body = new Vector<SnakePoint> ();
     direction = 'R';
     directionLast = 'R';
+    stackedPoints = 0;
 
-    for (int i = START_LENGTH; i >= 0; i--) {
-      body.add(new SnakePoint(0, 0));
-    }
+    // Init head
+    body.add(new SnakePoint(0,0));
+
+    // Init body
+    addPoints(START_LENGTH - 1);
 
     colorize();
     updateHash();
@@ -63,11 +68,14 @@ class Snake {
 
   List<SnakePoint> getBody () { return body; }
   SnakePoint getHead () { return body.get(0); }
+  SnakePoint getTail () { return body.lastElement(); }
 
   void setDirection (char d) { direction = d; }
   char getDirection () { return direction; }
 
   int getHash () { return hash; }
+
+  int getStackedPoints () { return stackedPoints; }
 
   // Generate a color gradient for the snake to use in its colorization
   private Vector<Integer> generateColors() {
@@ -127,6 +135,7 @@ class Snake {
   void addPoint () {
     // Coordinate is arbitrary since next move allows it to be drawn anyway
     body.add(new SnakePoint(-1, -1));
+    stackedPoints++;
 
     // Colorize all items
     // Could be made more efficient but eh
@@ -151,6 +160,7 @@ class Snake {
     SnakePoint s = body.get(0);
     int lastX = s.getX();
     int lastY = s.getY();
+    lastBody = this.copyBody();
 
     // Set last direction for auto movement matching
     directionLast = dir;
@@ -163,7 +173,12 @@ class Snake {
     s.setY(nextCoords[1]);
 
     if (hitWall(s.getX(), s.getY())) {
+      // Reset to display where we hit
+      body = lastBody;
+      body.get(0).setColor(color(0));
+
       return false;
+
     } else {
       body.set(0, s);
 
@@ -173,12 +188,17 @@ class Snake {
   }
 
   // Recursive function to move all parts of the body
+  // Moves all parts even if there is a collision for failure
   private Boolean moveNext (int i, int x, int y) {
     if (i >= body.size()) {
       updateHash();
+      stackedPoints = stackedPoints <= 0 ? 0 : stackedPoints - 1;
+
       return true;
 
     } else if (hitFront(x, y)) {
+      body = lastBody;
+      body.get(i-1).setColor(color(0));
       return false;
 
     } else {

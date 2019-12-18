@@ -18,17 +18,32 @@ void setup () {
 void draw () {
   background(100);
   scoreboard();
+  speedButton.draw();
 
-  // --- GAME ---
-  if (playing) {
+  // --- VARIABLE UI ---
+
+  if (snakeDied || playing) {
     drawSnake();
     drawFood();
-    moveSnake();
-    speedTextDisplay(255);
+  }
 
-  } else {
-    playButton();
-    speedButton();
+  if (!playing) {
+    if (viewBoard) {
+      viewBoardExitButton.draw();
+
+    } else {
+      playButton.draw();
+
+      if (snakeDied) {
+        viewBoardButton.draw();
+      }
+    }
+  }
+
+  // --- GAME ---
+
+  if (playing) {
+    moveSnake();
   }
 }
 
@@ -54,38 +69,28 @@ void keyPressed () {
 
 void mousePressed () {
   // If play button is pressed
-  if (!playing && mouseOverPlay()) {
+  if (!playing && playButton.mouseIsOver()) {
     snake = new Snake();
     newFood();
     score = 0;
     playing = true;
   }
 
-  if (!playing && mouseOverSpeed()) {
+  if (!playing && speedButton.mouseIsOver()) {
     cycleSpeed();
     score = 0;
+  }
+
+  if (!playing && snakeDied) {
+    if (!viewBoard && viewBoardButton.mouseIsOver()) {
+      viewBoard = true;
+    } else if (viewBoard && viewBoardExitButton.mouseIsOver()) {
+      viewBoard = false;
+    }
   }
 }
 
 // ---- UI ELEMENTS ----
-
-void playButton () {
-  if (!mouseOverPlay()) {
-    fill(200);
-  } else {
-    fill(255);
-  }
-
-  stroke(50);
-  ellipse(250, 250+SCORE_HEIGHT, PLAY_BUTTON_DIAM, PLAY_BUTTON_DIAM);
-
-  fill(0);
-  textSize(40);
-  textAlign(CENTER, CENTER);
-  text("Play", 249, 245+SCORE_HEIGHT);
-
-  stroke(255); // Reset stroke after
-}
 
 void scoreboard () {
   // Box
@@ -105,27 +110,6 @@ void scoreboard () {
   text("Best: " + highScore.toString(), 250, SCORE_HEIGHT/2);
 
   strokeWeight(2); // Reset to original
-}
-
-void speedButton () {
-  if (!mouseOverSpeed()) {
-    fill(200);
-  } else {
-    fill(255);
-  }
-
-  stroke(50);
-  rect(10,10,100,SCORE_HEIGHT/2+10);
-  speedTextDisplay(0);
-
-  stroke(255); // Reset stroke after
-}
-
-void speedTextDisplay(int c) {
-  fill(c);
-  textSize(23);
-  textAlign(CENTER,CENTER);
-  text(speedText, 60, SCORE_HEIGHT/2);
 }
 
 void drawSnake () {
@@ -154,15 +138,20 @@ void moveSnake () {
 
     if (snake.eating(food)) {
       newFood();
-      snake.addPoints(3);
+      snake.addPoints(GROW_AMT);
       score++;
       if (score > highScore) { highScore = score; }
+    }
+
+    if (!playing) {
+      snakeDied = true;
     }
   }
 }
 
 // ---- UTIL FUNCTIONS ----
 
+// TODO: Modify and add view board button
 Boolean mouseOverPlay () {
   float disX = 250 - mouseX;
   float disY = 250 + SCORE_HEIGHT - mouseY;

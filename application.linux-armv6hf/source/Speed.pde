@@ -33,4 +33,6 @@ void cycleSpeed () {
   speed = SPEED_MAP.get(speedText);
 
   highScore = highScoreMap.get(speedText);
+
+  speedButton.setText(speedText);
 }
