@@ -11,6 +11,9 @@
  */
 
 // --- CONSTANTS ---
+final int BOARD_WIDTH = 500;  // Need to modify here and directly in snake.pde if desired
+final int BOARD_HEIGHT = 500;
+
 final int PLAY_BUTTON_DIAM = 70;
 final int PLAY_BUTTON_WIDTH = 100;
 final int PLAY_BUTTON_HEIGHT = 70;
@@ -18,8 +21,8 @@ final int VIEW_BOARD_BUTTON_HEIGHT = 30;
 
 final int SCORE_HEIGHT = 50;
 
-final int BOARD_CENTER_X = 250;
-final int BOARD_CENTER_Y = 250 + SCORE_HEIGHT;
+final int BOARD_CENTER_X = BOARD_WIDTH / 2;
+final int BOARD_CENTER_Y = (BOARD_HEIGHT - SCORE_HEIGHT) / 2 + SCORE_HEIGHT;
 
 final color FOOD_COLOR = color(250, 50, 50);
 final int BOARD_SIZE = 25;

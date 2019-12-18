@@ -31,11 +31,13 @@ void draw () {
     drawFood();
     playButton.draw();
     viewBoardButton.draw();
+    viewBoardExitButton.draw(); // TODO: remove
     speedButton.draw();
 
   } else {
     playButton.draw();
     viewBoardButton.draw(); // TODO: remove
+    viewBoardExitButton.draw(); // TODO: remove
     speedButton.draw();
   }
 }

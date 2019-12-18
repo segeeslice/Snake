@@ -22,6 +22,12 @@ final int VIEW_BOARD_HEIGHT = 30;
 final int VIEW_BOARD_X = PLAY_X;
 final int VIEW_BOARD_Y = PLAY_Y + PLAY_HEIGHT + 5;
 
+// View board exit button
+final int VIEW_BOARD_EXIT_WIDTH = 25;
+final int VIEW_BOARD_EXIT_HEIGHT = 25;
+final int VIEW_BOARD_EXIT_X = BOARD_WIDTH - VIEW_BOARD_EXIT_WIDTH - 10;
+final int VIEW_BOARD_EXIT_Y = SCORE_HEIGHT + 10;
+
 // === PRESET CLASSES ===
 // NOTE: Done in this way because remaining operations cannot be done in flat file anyway.
 //       So it needs to be in its own method, or in a subclass.
@@ -69,8 +75,23 @@ class ViewBoardButton extends RectButton {
   }
 }
 
+class ViewBoardExitButton extends RectButton {
+  public ViewBoardExitButton () {
+    super(VIEW_BOARD_EXIT_X, VIEW_BOARD_EXIT_Y, VIEW_BOARD_EXIT_WIDTH, VIEW_BOARD_EXIT_HEIGHT);
+
+    colorNeutral = color(200, 175);
+    colorPressed = color(255);
+    strokeAmount = 50;
+
+    text = "X";
+    textColor = color(0, 100);
+    textSize = 17;
+  }
+}
+
 // === PRESET GLOBALS ===
 
 Button speedButton = new SpeedButton();
 Button playButton = new PlayButton();
 Button viewBoardButton = new ViewBoardButton();
+Button viewBoardExitButton = new ViewBoardExitButton();
