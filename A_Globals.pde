@@ -47,6 +47,7 @@ Brute BAI = new Brute();
 SnakePoint food = randomFood();
 Boolean playing = false;
 Boolean snakeDied = false;
+Boolean viewBoard = false;
 Integer score = 0;
 Integer highScore = 0;
 HashMap<String, Integer> highScoreMap = initHighScoreMap();

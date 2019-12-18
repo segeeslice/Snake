@@ -18,27 +18,32 @@ void setup () {
 void draw () {
   background(100);
   scoreboard();
+  speedButton.draw();
+
+  // --- VARIABLE UI ---
+
+  if (snakeDied || playing) {
+    drawSnake();
+    drawFood();
+  }
+
+  if (!playing) {
+    if (viewBoard) {
+      viewBoardExitButton.draw();
+
+    } else {
+      playButton.draw();
+
+      if (snakeDied) {
+        viewBoardButton.draw();
+      }
+    }
+  }
 
   // --- GAME ---
+
   if (playing) {
-    drawSnake();
-    drawFood();
-    speedButton.draw();
     moveSnake();
-
-  } else if (snakeDied) {
-    drawSnake();
-    drawFood();
-    playButton.draw();
-    viewBoardButton.draw();
-    viewBoardExitButton.draw(); // TODO: remove
-    speedButton.draw();
-
-  } else {
-    playButton.draw();
-    viewBoardButton.draw(); // TODO: remove
-    viewBoardExitButton.draw(); // TODO: remove
-    speedButton.draw();
   }
 }
 
@@ -74,6 +79,14 @@ void mousePressed () {
   if (!playing && speedButton.mouseIsOver()) {
     cycleSpeed();
     score = 0;
+  }
+
+  if (!playing && snakeDied) {
+    if (!viewBoard && viewBoardButton.mouseIsOver()) {
+      viewBoard = true;
+    } else if (viewBoard && viewBoardExitButton.mouseIsOver()) {
+      viewBoard = false;
+    }
   }
 }
 
